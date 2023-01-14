@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>用户登录</h1>
+{#method="post" action="/login/"：表示发出post请求，跳转至“/login”->login函数#}
+<form method="post" action="/login/">
+    {#解决token验证报错#}
+    {% csrf_token %}
+
+    <input type="text" name="user" placeholder="用户名">
+    <input type="text" name="pwd" placeholder="密码">
+    <input type="submit" value="提交"/>
+    <span style="color: red" t>{{ error_msg }}</span>
+</form>
+</body>
+</html>

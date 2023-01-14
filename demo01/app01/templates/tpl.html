@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>模板语法的学习</h1>
+    <h2>[Django遇到占位符会到views.py文件中去寻找相应模板来替换数据，浏览器读取到的数据则已是替换后的数据]</h2>
+    <h2>1.单独字符串输出</h2>
+    <div>{{ n1 }}</div>
+    <br><br><br>
+
+    {#1.列表#}
+    <h2>2.列表输出</h2>
+    <div>{{ n2 }}</div>
+    <br>
+    <h3>法1：直接索引，用”.“表示</h3>
+    {#法1：直接索引，用”.“表示#}
+    <div>{{ n2.0 }}</div>
+    <div>{{ n2.1 }}</div>
+    <div>{{ n2.2 }}</div>
+    <br>
+    <h3>法2：for循环索引</h3>
+    {#法2：for循环索引#}
+    <div>
+          {% for item in n2 %}
+              <span>{{ item }}</span>
+          {% endfor %}
+    </div>
+    <br><br><br>
+
+    {#2.字典#}
+    <h2>3.字典输出</h2>
+    <div>{{ n3 }}</div>
+    <br>
+    <h3>法1：直接索引，用键值索引</h3>
+    {#法1：直接索引，用键值索引#}
+    <div>{{ n3.name }}</div>
+    <div>{{ n3.salary }}</div>
+    <div>{{ n3.role }}</div>
+    <br>
+    <h3>法2：for循环索引</h3>
+    {#法2：for循环索引#}
+    <ul>
+          <h4>(1)”.keys“-->循环得到键值</h4>
+          {#[”.keys“-->循环得到键值]#}
+          {% for item in n3.keys %}
+              <li>{{ item }}</li>
+          {% endfor %}
+          <h4>(2)”.values“-->循环得到值</h4>
+          {#[”.values“-->循环得到值]#}
+          {% for item in n3.values %}
+              <li>{{ item }}</li>
+          {% endfor %}
+          <h4>(3)”.items“-->同时取键值与取值</h4>
+          {#[”.items“-->同时取键值与取值]#}
+          {% for k,v in n3.items %}
+              <li>{{ k }}={{ v }}</li>
+          {% endfor %}
+    </ul>
+    <br><br><br>
+
+    {#3.列表嵌套字典#}
+    <h2>4.列表嵌套字典输出</h2>
+    <div>{{ n4 }}</div>
+    <br>
+    <h3>法1：直接索引</h3>
+    <h4>(1)只用”.“索引至相应字典</h4>
+    {#法1：直接索引，用键值索引#}
+    <div>{{ n4.0 }}</div>
+    <div>{{ n4.1 }}</div>
+    <div>{{ n4.2 }}</div>
+    <h4>(2)用”.“外加相应键值索引至相应字典中的特定值</h4>
+    <div>{{ n4.0.name }}</div>
+    <div>{{ n4.1.salary }}</div>
+    <div>{{ n4.2.role }}</div>
+    <br>
+    <h3>法2：for循环索引</h3>
+    {#法2：for循环索引#}
+    <ul>
+          {#[”.keys“-->循环得到键值]#}
+          {% for item in n4 %}
+              <li>{{ item.name }} {{ item.salary }} {{ item.role }}</li>
+          {% endfor %}
+    </ul>
+    <br><br><br>
+    <hr/>
+
+    {#条件语句#}
+    <h2>条件语句[支持if，elif，else]</h2>
+    {% if n1 == "韩超" %}
+        <div>name是韩超，哒哒哒哒哒</div>
+        <div>name是韩超，哒哒哒哒哒</div>
+    {% elif n1 == "xxx" %}
+        <div>name不是韩超，哔哔哔哔哔</div>
+    {% else %}
+        <div>name不是韩超，嘟嘟嘟嘟嘟</div>
+    {% endif %}
+</body>
+</html>
