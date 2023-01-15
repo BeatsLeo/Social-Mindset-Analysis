@@ -35,7 +35,7 @@ app.use(function(req,res,next)
 });
 
 //请在此处设定路由(可参考bbs例子中的 ./routes/index.js中的代码，路由函数的实现请参考bbs例子中的./routes/txt.js和user.js)
-require('./routes/index');//set routes
+require('./routes');//set routes
 /*示例：
 app.route('/guid','get',....);
 app.route('/login','post',...);
