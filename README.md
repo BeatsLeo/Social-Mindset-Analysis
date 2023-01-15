@@ -16,10 +16,13 @@
 >         'event': None, # 该条帖子的核心事件，以 #xxx# 的tag格式引出，若有多条，随机选择一条或选择第一条，若没有则为None
 >         'post': 'xxx'	# 帖子的内容
 >         'time': 'xxxx-xx-xx',	# 发布时间，以给出格式存储
->         'comments': {	# 评论，以嵌套dict的形式存储
+>         'comments': {	# 评论，以嵌套dict的形式存储 
+>              [
 >             'content': 'xxx'	# 评论内容
 >             'time': 'xxxx-xx-xx',	# 评论时间，以给出格式存储
 >             'ip': 'xxx'	# 评论发布者的IP位置信息
+>             'like': 'xxx'	# 评论的点赞数
+>              ],....
 >         }
 >     }
 >     ```
