@@ -1,0 +1,533 @@
+<html>
+<head>
+<META HTTP-EQUIV="Content-Type" Content="text-html;charset=utf-8">
+<script language=javascript>
+var gFormID="x";
+function ChgForm()
+{
+	if(gFormID==selFrom.value)
+		return;
+	document.getElementById("div"+gFormID).style.display="none";
+	gFormID=selFrom.value;
+	document.getElementById("div"+gFormID).style.display="";
+}
+function DoSubmit()
+{
+	var urlx=document.getElementById("url"+gFormID);
+	if(urlx.value=="")
+	{
+		alert("尚未填写“URL”");
+		return;
+	}
+	var formx=document.getElementById("form"+gFormID);
+	formx.action=urlx.value;
+	//formx.target=parent.frmPage;
+	formx.submit();
+}
+</script>
+<style>
+body{font-size:12px;margin:2px 2px 2px 2px;overflow:auto}
+td{font-size:12px}
+.edit{border:1px solid gray;font-size:12px;color:blue;width:100%}
+.editr{border:1px solid red;font-size:12px;color:red;width:100%}
+.edits{border:1px solid gray;font-size:12px;color:blue}
+.tip{color:#008800}
+.tip li{margin-top:12px;font-weight:bold}
+.tip li>b{color:red}
+.htm{color:blue;white-space:nowrap;margin-left:24px;padding:8px;background:#dddddd}
+.htm b{color:red}
+form>u{text-decoration:none;color:red;font-weight:bold}
+</style>
+</head>
+<body>
+测试项目：
+<select onchange="ChgForm()" id="selFrom">
+<option value="x" selected>数据库初始化
+<option value=0>添加新书
+<option value=1>增加书籍数量
+<option value=2>删除/减少书籍
+<option value=3>修改书籍信息
+<option value=4>查询书籍
+<option value=100>添加读者
+<option value=101>删除读者
+<option value=102>修改读者信息
+<option value=103>查询读者
+<option value=104>查看某个读者未还书籍信息
+<option value=200>借书
+<option value=201>还书
+<option value=202>超期读者列表
+</select><br><br>
+<hr size=2 color=red>
+
+<!-- x 初始化数据库 -->
+<font color=red><b>URL</b>　填写用于处理此次提交的url(相对于__index.htm所在的路径)：</font>
+<div id="divx"><input class=editr type=text id="urlx">
+<hr size=2 color=red>
+<form id="formx" target="frmPage" action="" method="post">
+此接口不提交任何数据，测试此接口时，系统将提供空白数据库
+</form>
+<center><input type=button value="数据库初始化" onclick="DoSubmit()"></center><br>
+<span class="tip">
+	<li>成功返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;0&lt;/div&gt;</b><br>成功<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	<li>失败：返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;1&lt;/div&gt;</b><br>这里是错误信息，可根据你的情况输出<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+</span>
+</div>
+
+<!-- 0 添加新书 -->
+<div id="div0" style="display:none">
+<input class=editr type=text id="url0">
+<hr size=2 color=red>
+<form id="form0" target="frmPage" action="" method="post">
+	<b>★书号</b>[<u>bID</u>](惟一标识每种书,最多30个字符,如“ISBN&nbsp7-5325-2480-9”)：<br><input class=edit type=text name="bID"><br><br>
+	<b>★书名</b>[<u>bName</u>](最多30个字符，如“人间词话”)：<br><input class=edit type=text name="bName"><br><br>
+	<b>　出版社</b>[<u>bPub</u>](最多30个字符，如“上海古籍出版社”)：<br><input class=edit type=text name="bPub"><br><br>
+	<b>　出版日期</b>[<u>bDate</u>](提交格式为“yyyy-mm-dd”，如“2008-08-09”)：<br><input class=edit type=text name="bDate"><br><br>
+	<b>　作者</b>[<u>bAuthor</u>](最多20个字符，如“王国维”)：<br><input class=edit type=text name="bAuthor"><br><br>
+	<b>　内容摘要</b>[<u>bMem</u>](最多30个字符，如“高等教育出版社”)：<br><input class=edit type=text name="bMem"><br><br>
+	<b>★数量</b>[<u>bCnt</u>](整数，应该>0，表示新书的数量)：<br><input class=edit type=text name="bCnt"><br><br>
+</form>
+<center><input type=button value="添加新书" onclick="DoSubmit()"></center><br>
+<span class="tip">
+	<li>成功返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;0&lt;/div&gt;</b><br>成功<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	<li>失败分为以下几种情况：</li>
+	<ul>
+		<li>该书已经存在；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;1&lt;/div&gt;</b><br>该书已经存在<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>提交的参数有误（书号或书名没有填写、数量不是填写的数字、填写的内容不符合格式要求）；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;2&lt;/div&gt;</b><br>提交的参数有误：（其他你想输出的信息）<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	</ul>
+</span>
+</div>
+
+<!-- 1 增加书籍数量 -->
+<div id="div1" style="display:none">
+<input class=editr type=text id="url1">
+<hr size=2 color=red>
+<form id="form1" target="frmPage" action="" method="post">
+	<b>★书号</b>[<u>bID</u>](惟一标识每种书,最多30个字符,如“ISBN&nbsp7-5325-2480-9”)：<br><input class=edit type=text name="bID"><br><br>
+	<b>★数量</b>[<u>bCnt</u>](整数，应该>0，表示该书增加的数量)：<br><input class=edit type=text name="bCnt"><br><br>
+</form>
+<center><input type=button value="增加书籍数量" onclick="DoSubmit()"></center><br>
+<span class="tip">
+	<li>成功返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;0&lt;/div&gt;</b><br>成功<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	<li>失败分为以下几种情况：</li>
+	<ul>
+		<li>该书<b>不</b>存在；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;1&lt;/div&gt;</b><br>该书不存在<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>提交的参数有误（书号没有填写或过长、数量不是填写的数字）；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;2&lt;/div&gt;</b><br>提交的参数有误：（其他你想输出的信息）<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	</ul>
+</span>
+</div>
+
+<!-- 2 删除/减少书籍 -->
+<div id="div2" style="display:none">
+<input class=editr type=text id="url2">
+<hr size=2 color=red>
+<form id="form2" target="frmPage" action="" method="post">
+	<b>★书号</b>[<u>bID</u>](惟一标识每种书,最多30个字符,如“ISBN&nbsp7-5325-2480-9”)：<br><input class=edit type=text name="bID"><br><br>
+	<b>★数量</b>[<u>bCnt</u>](整数，应该>0，表示该书减少的数量)：<br><input class=edit type=text name="bCnt"><br><br>
+</form>
+<center><input type=button value="删除/减少书籍" onclick="DoSubmit()"></center><br>
+<span class="tip">
+	<li>如果该书总数量被减到零，则表示删除该书
+	<li>成功返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;0&lt;/div&gt;</b><br>成功<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	<li>失败分为以下几种情况：</li>
+	<ul>
+		<li>该书<b>不</b>存在；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;1&lt;/div&gt;</b><br>该书不存在<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>打算减少的数量大于该书目前在库（未借出）的数量；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;2&lt;/div&gt;</b><br>减少的数量大于该书目前在库数量<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>提交的参数有误，如书号没有填写，数量不是填写的数字……等等；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;3&lt;/div&gt;</b><br>提交的参数有误：（其他你想输出的信息）<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	</ul>
+</span>
+</div>
+
+<!-- 3 修改书籍信息 -->
+<div id="div3" style="display:none">
+<input class=editr type=text id="url3">
+<hr size=2 color=red>
+<form id="form3" target="frmPage" action="" method="post">
+	<b>★书号</b>[<u>bID</u>](惟一标识每种书,最多30个字符,如“ISBN&nbsp7-5325-2480-9”)：<br><input class=edit type=text name="bID"><br><br>
+	<b>★书名</b>[<u>bName</u>](最多30个字符，如“人间词话”)：<br><input class=edit type=text name="bName"><br><br>
+	<b>　出版社</b>[<u>bPub</u>](最多30个字符，如“上海古籍出版社”)：<br><input class=edit type=text name="bPub"><br><br>
+	<b>　出版日期</b>[<u>bDate</u>](提交格式为“yyyy-mm-dd”，如“2008-08-09”)：<br><input class=edit type=text name="bDate"><br><br>
+	<b>　作者</b>[<u>bAuthor</u>](最多20个字符，如“王国维”)：<br><input class=edit type=text name="bAuthor"><br><br>
+	<b>　内容摘要</b>[<u>bMem</u>](最多30个字符，如“高等教育出版社”)：<br><input class=edit type=text name="bMem"><br><br>
+</form>
+<center><input type=button value="修改书籍信息" onclick="DoSubmit()"></center><br>
+<span class="tip">
+	<li>按输入的书号找到该书，其他项按输入修改（未输入表示不修改）
+	<li>成功返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;0&lt;/div&gt;</b><br>成功<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	<li>失败分为以下几种情况：</li>
+	<ul>
+		<li>该书<b>不</b>存在；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;1&lt;/div&gt;</b><br>该书不存在<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>提交的参数有误，如书号没有填写，书名没有填写，日期填写不正确……等等；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;2&lt;/div&gt;</b><br>提交的参数有误：（其他你想输出的信息）<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	</ul>
+</span>
+</div>
+
+<!-- 4 查询书籍 -->
+<div id="div4" style="display:none">
+<input class=editr type=text id="url4">
+<hr size=2 color=red>
+<form id="form4" target="frmPage" action="" method="post">
+	<b>　书号</b>[<u>bID</u>]：<br><input class=edit type=text name="bID"><br><br>
+	<b>　书名</b>[<u>bName</u>]：<br><input class=edit type=text name="bName"><br><br>
+	<b>　出版社</b>[<u>bPub</u>]：<br><input class=edit type=text name="bPub"><br><br>
+	<b>　出版日期范围</b>[<u>bDate0～bDate1</u>]<br>
+	<input class=edits type=text name="bDate0" size=10>　～　<input class=edits type=text name="bDate1" size=10><br><br>
+	<b>　作者</b>[<u>bAuthor</u>]：<br><input class=edit type=text name="bAuthor"><br><br>
+	<b>　内容摘要</b>[<u>bMem</u>]：<br><input class=edit type=text name="bMem"><br><br>
+</form>
+<center><input type=button value="查询书籍" onclick="DoSubmit()"></center><br>
+<span class="tip">
+	<li>如未填写某项条件，表示在该项上不做限制（任何条件都不填写则列出所有书籍）
+	<li>如填写了不止一项条件，则列出的内容需满足全部条件
+	<li>查询方式除日期外，都要使用模糊查询方式，例如：书名中输入的是“ABC”，则返回结果中只要书名中包含字符串“ABC”的都满足此项要求
+	<li>查询成功返回的页面HTML应该返回一个&lt;table&gt;表格，表格中从第一列到最后一列的内容依次为：
+	<ol>
+		<li>书号<li>书名<li>总数量<li>在库数量<li>出版社<li>出版日期(格式为 yyyy-mm-dd 如“2008-09-6”)<li>作者<li>内容摘要
+	</ol>
+	如下所示（示例HTML代码可能过宽，请使用横向滚动条）：
+	</li><div class=htm>
+		&lt;html&gt;&lt;head&gt;&lt;META HTTP-EQUIV="Content-Type" Content="text-html;charset=utf-8"&gt;&lt;/head&gt;<br>
+		&lt;body&gt;<br>
+		<b>&lt;table border=1 id='result'&gt;<br>
+		&lt;tr&gt;&lt;td&gt;ISBN 123-34&lt;/td&gt;&lt;td&gt;数据库原理&lt;/td&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;高等教育出版社&lt;/td&gt;&lt;td&gt;1983-04-13&lt;/td&gt;&lt;td&gt;王珊&lt;/td&gt;&lt;td&gt;这是数据库……&lt;/td&gt;&lt;/tr&gt;<br>
+		&lt;tr&gt;&lt;td&gt;ISBN 7-5325-24&lt;/td&gt;&lt;td&gt;人间词话&lt;/td&gt;&lt;td&gt;3&lt;/td&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;上海古籍出版社&lt;/td&gt;&lt;td&gt;1998-12-03&lt;/td&gt;&lt;td&gt;王国维&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;<br>
+		&lt;tr&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;/tr&gt;<br>
+		&lt;/table&gt;</b><br>
+		&lt;/body&gt;<br>
+		&lt;/html&gt;
+	</div>
+	实际显示效果为：
+	<table border=1>
+	<tr><td>ISBN 123-34</td><td>数据库原理</td><td>2</td><td>1</td><td>高等教育出版社</td><td>1983-04-13</td><td>王珊</td><td>这是数据库……</td></tr>
+	<tr><td>ISBN 7-5325-24</td><td>人间词话</td><td>3</td><td>2</td><td>上海古籍出版社</td><td>1998-12-03</td><td>王国维</td><td></td></tr>
+	<tr><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td></tr>
+	</table>
+	<li>如果没有任何一种书满足填写的条件，则返回页面的HTML应该是：
+	</li><div class=htm>
+		&lt;html&gt;&lt;head&gt;&lt;META HTTP-EQUIV="Content-Type" Content="text-html;charset=utf-8"&gt;&lt;/head&gt;<br>
+		&lt;body&gt;<br>
+		<b>&lt;table border=1 id='result'&gt;<br>
+		&lt;/table&gt;</b><br>
+		&lt;/body&gt;<br>
+		&lt;/html&gt;
+	</div>
+</span>
+</div>
+
+<!-- 100 添加读者 -->
+<div id="div100" style="display:none">
+<input class=editr type=text id="url100">
+<hr size=2 color=red>
+<form id="form100" target="frmPage" action="" method="post">
+	<b>★证号</b>[<u>rID</u>](惟一标识每个读者,最多8个字符,如“A-31”)：<br><input class=edit type=text name="rID"><br><br>
+	<b>　姓名</b>[<u>rName</u>](最多10个字，如“张三”)：<br><input class=edit type=text name="rName"><br><br>
+	<b>　性别</b>[<u>rSex</u>](应该填写“男”或者“女”)：<br><input class=edit type=text name="rSex"><br><br>
+	<b>　系名</b>[<u>rDept</u>](最多10个字，如“计科系”)：<br><input class=edit type=text name="rDept"><br><br>
+	<b>　年级</b>[<u>rGrade</u>](应该是正整数)：<br><input class=edit type=text name="rGrade"><br><br>
+</form>
+<center><input type=button value="添加读者" onclick="DoSubmit()"></center><br>
+<span class="tip">
+	<li>成功返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;0&lt;/div&gt;</b><br>成功<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	<li>失败分为以下几种情况：</li>
+	<ul>
+		<li>该证号已经存在；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;1&lt;/div&gt;</b><br>该证号已经存在<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>提交的参数有误，如证号没有填写，年级不是填写的正整数……等等；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;2&lt;/div&gt;</b><br>提交的参数有误：（其他你想输出的信息）<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	</ul>
+</span>
+</div>
+
+<!-- 101 删除读者 -->
+<div id="div101" style="display:none">
+<input class=editr type=text id="url101">
+<hr size=2 color=red>
+<form id="form101" target="frmPage" action="" method="post">
+	<b>★证号</b>[<u>rID</u>](惟一标识每个读者,最多8个字符,如“A-31”)：<br><input class=edit type=text name="rID"><br><br>
+</form>
+<center><input type=button value="删除读者" onclick="DoSubmit()"></center><br>
+<span class="tip">
+	<li>成功返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;0&lt;/div&gt;</b><br>成功<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	<li>失败分为以下几种情况：</li>
+	<ul>
+		<li>该证号<b>不</b>存在或<b>未</b>填写；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;1&lt;/div&gt;</b><br>该证号不存在<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>该读者尚有书籍未归还；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;2&lt;/div&gt;</b><br>该读者尚有书籍未归还<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	</ul>
+</span>
+</div>
+
+<!-- 102 修改读者信息 -->
+<div id="div102" style="display:none">
+<input class=editr type=text id="url102">
+<hr size=2 color=red>
+<form id="form102" target="frmPage" action="" method="post">
+	<b>★证号</b>[<u>rID</u>](惟一标识每个读者,最多8个字符,如“A-31”)：<br><input class=edit type=text name="rID"><br><br>
+	<b>　姓名</b>[<u>rName</u>](最多10个字，如“张三”)：<br><input class=edit type=text name="rName"><br><br>
+	<b>　性别</b>[<u>rSex</u>](应该填写“男”或者“女”)：<br><input class=edit type=text name="rSex"><br><br>
+	<b>　系名</b>[<u>rDept</u>](最多10个字，如“计科系”)：<br><input class=edit type=text name="rDept"><br><br>
+	<b>　年级</b>[<u>rGrade</u>](应该是正整数)：<br><input class=edit type=text name="rGrade"><br><br>
+</form>
+<center><input type=button value="修改读者信息" onclick="DoSubmit()"></center><br>
+<span class="tip">
+	<li>按输入的证号找到读者，其他项按输入修改（未输入表示不修改）
+	<li>成功返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;0&lt;/div&gt;</b><br>成功<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	<li>失败分为以下几种情况：</li>
+	<ul>
+		<li>该证号<b>不</b>存在；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;1&lt;/div&gt;</b><br>该证号不存在<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>提交的参数有误，如证号没有填写，年级不是填写的正整数……等等；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;2&lt;/div&gt;</b><br>提交的参数有误：（其他你想输出的信息）<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	</ul>
+</span>
+</div>
+
+<!-- 103 查询读者 -->
+<div id="div103" style="display:none">
+<input class=editr type=text id="url103">
+<hr size=2 color=red>
+<form id="form103" target="frmPage" action="" method="post">
+	<b>　证号</b>[<u>rID</u>](惟一标识每个读者,最多8个字符,如“A-31”)：<br><input class=edit type=text name="rID"><br><br>
+	<b>　姓名</b>[<u>rName</u>](最多10个字，如“张三”)：<br><input class=edit type=text name="rName"><br><br>
+	<b>　性别</b>[<u>rSex</u>](应该填写“男”或者“女”)：<br><input class=edit type=text name="rSex"><br><br>
+	<b>　系名</b>[<u>rDept</u>](最多10个字，如“计科系”)：<br><input class=edit type=text name="rDept"><br><br>
+	<b>　年级范围</b>[<u>rGrade0～rGrade1</u>](应该是正整数)：<br>
+		<input class=edits type=text name="rGrade0" size=4>　～　<input class=edits type=text name="rGrade1" size=4><br><br>
+</form>
+<center><input type=button value="查询读者" onclick="DoSubmit()"></center><br>
+<span class="tip">
+	<li>如未填写某项条件，表示在该项上不做限制
+	<li>如填写了不止一项条件，则列出的内容需满足全部条件
+	<li>查询方式除年级和性别外，都要使用模糊查询方式，例如：姓名中输入的是“ABC”，则返回结果中只要姓名中包含字符串“ABC”的都满足此项要求
+	<li>查询成功返回的页面HTML应该返回一个&lt;table&gt;表格，表格中从第一列到最后一列的内容依次为：
+	<ol>
+		<li>证号<li>姓名<li>性别(只能是“男”或“女”)<li>系名<li>年级(一定是正整数)
+	</ol>
+	HTML源码样板如下所示（请严格遵循此模板生成页面的HTML；示例HTML代码可能过宽，请使用横向滚动条查看）：
+	</li><div class=htm>
+		&lt;html&gt;&lt;head&gt;&lt;META HTTP-EQUIV="Content-Type" Content="text-html;charset=utf-8"&gt;&lt;/head&gt;<br>
+		&lt;body&gt;<br>
+		<b>&lt;table border=1 id='result'&gt;<br>
+		&lt;tr&gt;&lt;td&gt;B-301&lt;/td&gt;&lt;td&gt;张三&lt;/td&gt;&lt;td&gt;男&lt;/td&gt;&lt;td&gt;计算机&lt;/td&gt;&lt;td&gt;2005&lt;/td&gt;&lt;/tr&gt;<br>
+		&lt;tr&gt;&lt;td&gt;90-45&lt;/td&gt;&lt;td&gt;李四&lt;/td&gt;&lt;td&gt;女&lt;/td&gt;&lt;td&gt;中文&lt;/td&gt;&lt;td&gt;2006&lt;/td&gt;&lt;/tr&gt;<br>
+		&lt;tr&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;男&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;/tr&gt;<br>
+		&lt;/table&gt;</b><br>
+		&lt;/body&gt;<br>
+		&lt;/html&gt;
+	</div>
+	实际显示效果为：
+	<table border=1>
+	<tr><td>B-301</td><td>张三</td><td>男</td><td>计算机</td><td>2005</td></tr>
+	<tr><td>90-45</td><td>李四</td><td>女</td><td>中文</td><td>2006</td></tr>
+	<tr><td>…</td><td>…</td><td>男</td><td>…</td><td>…</td></tr>
+	</table>
+	<li>如果没有任何一个读者满足填写的条件，则返回页面的HTML应该是：
+	</li><div class=htm>
+		&lt;html&gt;&lt;head&gt;&lt;META HTTP-EQUIV="Content-Type" Content="text-html;charset=utf-8"&gt;&lt;/head&gt;<br>
+		&lt;body&gt;<br>
+		<b>&lt;table border=1 id='result'&gt;<br>
+		&lt;/table&gt;</b><br>
+		&lt;/body&gt;<br>
+		&lt;/html&gt;
+	</div>
+</span>
+</div>
+
+<!-- 104 查看某个读者未还书籍信息 -->
+<div id="div104" style="display:none">
+<input class=editr type=text id="url104">
+<hr size=2 color=red>
+<form id="form104" target="frmPage" action="" method="post">
+	<b>★证号</b>[<u>rID</u>](惟一标识每个读者,最多8个字符,如“A-31”)：<br><input class=edit type=text name="rID"><br><br>
+</form>
+<center><input type=button value="查看某个读者未还书籍信息" onclick="DoSubmit()"></center><br>
+<span class="tip">
+	<li>该证号<b>不</b>存在；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;1&lt;/div&gt;</b><br>该证号不存在<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	<li>成功返回的页面HTM应该返回一个&lt;table&gt;表格，表格中从第一列到最后一列的内容依次为：
+	<ol>
+		<li>书号<li>书名<li>借书日期(格式为 yyyy-mm-dd 如“2008-08-01”)<li>应该还书的日期(格式为 yyyy-mm-dd 如“2008-09-01”)<li>是否超期(内容为“是”或者“否”)
+	</ol>
+	HTML源码样板如下所示（请严格遵循此模板生成页面的HTML；示例HTML代码可能过宽，请使用横向滚动条查看）：
+	</li><div class=htm>
+		&lt;html&gt;&lt;head&gt;&lt;META HTTP-EQUIV="Content-Type" Content="text-html;charset=utf-8"&gt;&lt;/head&gt;<br>
+		&lt;body&gt;<br>
+		<b>&lt;table border=1 id='result'&gt;<br>
+		&lt;tr&gt;&lt;td&gt;ISBN 123-34&lt;/td&gt;&lt;td&gt;数据库原理&lt;/td&gt;&lt;td&gt;2008-09-01&lt;/td&gt;&lt;td&gt;2008-10-01&lt;/td&gt;&lt;td&gt;是&lt;/td&gt;&lt;/tr&gt;<br>
+		&lt;tr&gt;&lt;td&gt;ISBN 7-5325-24&lt;/td&gt;&lt;td&gt;人间词话&lt;/td&gt;&lt;td&gt;2008-11-19&lt;/td&gt;&lt;td&gt;2008-12-19&lt;/td&gt;&lt;td&gt;否&lt;/td&gt;&lt;/tr&gt;<br>
+		&lt;tr&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;/tr&gt;<br>
+		&lt;/table&gt;</b><br>
+		&lt;/body&gt;<br>
+		&lt;/html&gt;
+	</div>
+	实际显示效果为：
+	<table border=1>
+	<tr><td>ISBN 123-34</td><td>数据库原理</td><td>2008-09-01</td><td>2008-10-01</td><td>是</td></tr>
+	<tr><td>ISBN 7-5325-24</td><td>人间词话</td><td>2008-11-19</td><td>2008-12-19</td><td>否</td></tr>
+	<tr><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td></tr>
+	</table>
+	<li>如果该读者目前没有任何在借书籍，则返回页面的HTML应该是：
+	</li><div class=htm>
+		&lt;html&gt;&lt;head&gt;&lt;META HTTP-EQUIV="Content-Type" Content="text-html;charset=utf-8"&gt;&lt;/head&gt;<br>
+		&lt;body&gt;<br>
+		<b>&lt;table border=1 id='result'&gt;<br>
+		&lt;/table&gt;</b><br>
+		&lt;/body&gt;<br>
+		&lt;/html&gt;
+	</div>
+</span>
+</div>
+
+<!-- 200 借书 -->
+<div id="div200" style="display:none">
+<input class=editr type=text id="url200">
+<hr size=2 color=red>
+<form id="form200" target="frmPage" action="" method="post">
+	<b>★证号</b>[<u>rID</u>]：<br><input class=edit type=text name="rID"><br><br>
+	<b>★书号</b>[<u>bID</u>]：<br><input class=edit type=text name="bID"><br><br>
+</form>
+<center><input type=button value="借书" onclick="DoSubmit()"></center><br>
+<span class="tip">
+	<li>成功返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;0&lt;/div&gt;</b><br>成功<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	<li>失败分为以下几种情况：</li>
+	<ul>
+		<li>该证号<b>不</b>存在或<b>未</b>填写；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;1&lt;/div&gt;</b><br>该证号不存在<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>该书号<b>不</b>存在或<b>未</b>填写；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;2&lt;/div&gt;</b><br>该书号不存在<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>该读者有超期书未还；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;3&lt;/div&gt;</b><br>该读者有超期书未还<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>该读者已经借阅该书，且未归还；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;4&lt;/div&gt;</b><br>该读者已经借阅该书，且未归还<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>该书已经全部借出；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;5&lt;/div&gt;</b><br>该书已经全部借出<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>其他你个人定义的借书失败的情况；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;6&lt;/div&gt;</b><br>（你想写的出错信息）<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	</ul>
+</span>
+</div>
+
+<!-- 201 还书 -->
+<div id="div201" style="display:none">
+<input class=editr type=text id="url201">
+<hr size=2 color=red>
+<form id="form201" target="frmPage" action="" method="post">
+	<b>★证号</b>[<u>rID</u>]：<br><input class=edit type=text name="rID"><br><br>
+	<b>★书号</b>[<u>bID</u>]：<br><input class=edit type=text name="bID"><br><br>
+</form>
+<center><input type=button value="还书" onclick="DoSubmit()"></center><br>
+<span class="tip">
+	<li>成功返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;0&lt;/div&gt;</b><br>成功<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	<li>失败分为以下几种情况：</li>
+	<ul>
+		<li>该证号<b>不</b>存在或<b>未</b>填写；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;1&lt;/div&gt;</b><br>该证号不存在<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>该书号<b>不</b>存在或<b>未</b>填写；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;2&lt;/div&gt;</b><br>该书号不存在<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+		<li>该读者并未借阅该书；返回的页面HTML应该是：</li><div class=htm>&lt;html&gt;&lt;body&gt;<br>
+	<b>&lt;div id='result' style='display:none'&gt;3&lt;/div&gt;</b><br>该读者并未借阅该书<br>
+	&lt;/body&gt;&lt;/html&gt;</div>
+	</ul>
+</span>
+</div>
+
+<!-- 202 超期读者列表 -->
+<div id="div202" style="display:none">
+<input class=editr type=text id="url202">
+<hr size=2 color=red>
+<form id="form202" target="frmPage" action="" method="post">
+</form>
+<center><input type=button value="超期读者列表" onclick="DoSubmit()"></center><br>
+<span class="tip">
+	<li>此项查询页面不提交任何参数，也就是说，只要访问此URL页面，就立刻返回超期读者列表；返回的页面HTM应该返回一个&lt;table&gt;表格，表格中从第一列到最后一列的内容依次为：
+	<ol>
+		<li>证号<li>姓名<li>性别(只能是“男”或“女”)<li>系名<li>年级(一定是正整数)
+	</ol>
+	HTML源码样板如下所示（请严格遵循此模板生成页面的HTML；示例HTML代码可能过宽，请使用横向滚动条查看）：
+	</li><div class=htm>
+		&lt;html&gt;&lt;head&gt;&lt;META HTTP-EQUIV="Content-Type" Content="text-html;charset=utf-8"&gt;&lt;/head&gt;<br>
+		&lt;body&gt;<br>
+		<b>&lt;table border=1 id='result'&gt;<br>
+		&lt;tr&gt;&lt;td&gt;B-301&lt;/td&gt;&lt;td&gt;张三&lt;/td&gt;&lt;td&gt;男&lt;/td&gt;&lt;td&gt;计算机&lt;/td&gt;&lt;td&gt;2005&lt;/td&gt;&lt;/tr&gt;<br>
+		&lt;tr&gt;&lt;td&gt;90-45&lt;/td&gt;&lt;td&gt;李四&lt;/td&gt;&lt;td&gt;女&lt;/td&gt;&lt;td&gt;中文&lt;/td&gt;&lt;td&gt;2006&lt;/td&gt;&lt;/tr&gt;<br>
+		&lt;tr&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;男&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;td&gt;…&lt;/td&gt;&lt;/tr&gt;<br>
+		&lt;/table&gt;</b><br>
+		&lt;/body&gt;<br>
+		&lt;/html&gt;
+	</div>
+	实际显示效果为：
+	<table border=1>
+	<tr><td>B-301</td><td>张三</td><td>男</td><td>计算机</td><td>2005</td></tr>
+	<tr><td>90-45</td><td>李四</td><td>女</td><td>中文</td><td>2006</td></tr>
+	<tr><td>…</td><td>…</td><td>男</td><td>…</td><td>…</td></tr>
+	</table>
+	<li>如果没有任何一个读者满足填写的条件，则返回页面的HTML应该是：
+	</li><div class=htm>
+		&lt;html&gt;&lt;head&gt;&lt;META HTTP-EQUIV="Content-Type" Content="text-html;charset=utf-8"&gt;&lt;/head&gt;<br>
+		&lt;body&gt;<br>
+		<b>&lt;table border=1 id='result'&gt;<br>
+		&lt;/table&gt;</b><br>
+		&lt;/body&gt;<br>
+		&lt;/html&gt;
+	</div>
+</span>
+</div>
+
+</body>
+</html>
+

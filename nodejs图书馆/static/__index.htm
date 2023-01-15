@@ -1,0 +1,171 @@
+<html>
+<head>
+<META HTTP-EQUIV="Content-Type" Content="text-html; charset=utf-8">
+<title>数据库原理试验(B/S模式)测试检验页面</title>
+<!--script language=javascript src="Check.js"></script-->
+<script language=javascript>
+String.prototype.trim=function()
+{
+        return this.replace(/(^\s*)|(\s*$)/g, "");
+};
+var $,$B;
+var gTabs=new Array
+(
+	"SSIIsdss",//4>查询书籍
+	"SSEsi",//103查询读者
+	"SSDDB",//104>查看某个读者未还书籍信息
+	"SSEsi"//202>超期读者列表
+);
+function Check(n)
+{
+	if(n!="x")
+		n=parseInt(n);
+	//alert("n="+n);
+	$=frmPage.document;
+	$B=$.body;
+	if($B==null)
+	{
+		alert("×：无法找到<body>对象标签！");
+		return;
+	}
+	var tab=$.getElementById("result");
+	if(!tab)
+	{
+		alert("×：没有找到 id='result'　的结果输出对象");
+		return;
+	}
+	if(104==n && (!tab.tagName || tab.tagName.toLowerCase()!="table"))
+		n=-104;
+	switch(n)
+	{
+	case 4://查询书籍
+		CheckTab(tab,0);
+		break;
+	case 103://103查询读者
+		CheckTab(tab,1);
+		break;
+	case 104://104>查看某个读者未还书籍信息
+		CheckTab(tab,2);
+		break;
+	case 202://202>超期读者列表
+		CheckTab(tab,3);
+		break;
+	default:
+		{
+			var s=tab.innerText.trim();
+			if(s=="")
+			{
+				alert("×：id='result'对象中缺少返回代码！");
+				return;
+			}
+			var i=parseInt(s);
+			if(isNaN(i) || i<0 || i>6)
+			{
+				alert("×：返回的代码不是 0 ～ 6 的整数！");
+				return;
+			}
+			alert("√：输出格式检查基本通过！^_^\r\n(返回值："+i+")");
+		}
+	}
+}
+function CheckTab(tab,idx)
+{
+	if(!tab.tagName || tab.tagName.toLowerCase()!="table")
+	{
+		alert("×：id='result'对象应该是<table ...>！\r\n请仔细检查");
+		return;
+	}
+	var tp=gTabs[idx];
+	var cnt=tp.length;
+	if(tab.rows.length<=0)
+	{
+		alert("√：输出格式检查基本通过！^_^\r\n(空表格)");
+		return;
+	}
+	for(var r=0;r<tab.rows.length;r++)
+	{
+		var row=tab.rows[r];
+		if(row.cells.length!=tp.length)
+		{
+			alert("×：此表格要求的列数是"+tp.length+"列！而您表格中第"+(r+1)+"行列数为："+row.cells.length+"。\r\n请仔细检查");
+			return;
+		}
+		for(var c=0;c<tp.length;c++)
+		{
+			var x;
+			var v=row.cells[c].innerHTML.trim();
+			var tx=tp.substr(c,1);
+			var t=tx.toLowerCase();
+			var T=tx.toUpperCase();
+			if(v=="")
+			{
+				if(T==tx)
+				{
+					alert("×：第"+(c+1)+"列不能为空。\r\n您没有填写第"+(r+1)+"行第"+(c+1)+"列！\r\n请仔细检查");
+					return;
+				}
+				continue;
+			}
+			switch(T)
+			{
+			case 'I'://整数
+				x=parseInt(v);
+				if(isNaN(x))
+				{
+					alert("×：第"+(c+1)+"列应该填写整数。\r\n您在第"+(r+1)+"行第"+(c+1)+"列填写的是["+v+"]。\r\n填写错误！请仔细检查");
+					return;
+				}
+				break;
+			case 'E'://男女
+				if(v!="男" && v!="女")
+				{
+					alert("×：第"+(c+1)+"列应该填写“男”或“女”。\r\n您在第"+(r+1)+"行第"+(c+1)+"列填写的是["+v+"]。\r\n填写错误！请仔细检查");
+					return;
+				}
+				break;
+			case 'D'://日期
+				if(null==v.match(/^[0-9]+-[0-9]+-[0-9]+$/))
+				{
+					alert("×：第"+(c+1)+"列应该填写格式为“yyyy-mm-dd”的日期。\r\n您在第"+(r+1)+"行第"+(c+1)+"列填写的是["+v+"]。\r\n填写错误！请仔细检查");
+					return;
+				}
+				break;
+			case 'B'://
+				if(v!="是" && v!="否")
+				{
+					alert("×：第"+(c+1)+"列应该填写“是”或“否”。\r\n您在第"+(r+1)+"行第"+(c+1)+"列填写的是["+v+"]。\r\n填写错误！请仔细检查");
+					return;
+				}
+				break;
+			default:;
+			}
+		}
+	}
+	alert("√：输出格式检查基本通过！^_^");
+}
+function OnPageLoad()
+{
+	try
+	{
+		if(/__readme.htm$/i.test(''+frmPage.location))
+			return;
+	}
+	catch(e)
+	{
+		alert("获取失败");
+		return;
+	}
+	frmSrc.memSrc.value=frmPage.document.documentElement.outerHTML;
+	//alert("完成！\r\n请查看结果。");
+	Check(frmForm.selFrom.value);
+}
+</script>
+</head>
+<frameset cols="30%,*">
+	<frame src="__form.htm" id="frmForm" name="frmForm">
+	<frameset rows="50%,50%">
+		<frame id="frmPage" name="frmPage" src="__readme.htm" onload="OnPageLoad()">
+		<frame id="frmSrc" name="frmSrc" src="__src.htm">
+	</frameset>
+</frameset>
+</html>

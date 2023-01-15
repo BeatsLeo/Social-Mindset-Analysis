@@ -1,0 +1,151 @@
+<html>
+<head>
+<META HTTP-EQUIV="Content-Type" Content="text-html;charset=utf-8">
+<style>
+body{font-size:14px;line-height:150%;margin:2px 2px 2px 2px;overflow:auto}
+li{font-weight:bold}
+body>li{font-size:18px}
+ol{margin:8px 0}
+ol>li{font-weight:normal}
+.par{font-size:12px;background:#ddd;padding:4px}
+.par>u{text-decoration:none;color:red;font-weight:bold}
+.htm{color:blue;white-space:nowrap;margin-left:24px;padding:8px;background:#dddddd}
+.htm b{color:red}
+.ini{color:blue;font:normal 12px/18px 宋体}
+.ini i{color:#008000}
+[big]{color:#f00}
+b[big]{font-size:1.5em}
+s{text-decoration:none;}
+</style>
+</head>
+<body>
+<div style="text-align:center;font:bold 22px 黑体">数据库试验要求说明</div>
+<li>功能实现说明</li>
+<ul>
+	<li>应用需运行在80端口</li>
+	<li>必须实现以下几个功能(返回页面)</li>
+	<ol>
+		<li>数据库初始化：响应浏览器提交的请求，完成数据库初始化的功能，使用create table建立数据库中的各数据表，保证其中没有读者、书籍、借还书数据，即此数据库文件中没有一本书、一个读者，也不能有任何借还书的数据记录（测试时，测试系统会保证数据库lib.db中没有任何数据表）。
+		<li>添加新书：响应浏览器提交的FORM数据，完成新书添加的功能，并按要求返回HTML页面
+		<li>增加书籍数量：响应浏览器提交的FORM数据，完成增加书籍数量的功能，并按要求返回HTML页面
+		<li>删除/减少书籍：响应提交的FORM数据，完成删除/减少书籍的功能，并按要求返回HTML页面
+		<li>修改书籍信息：响应浏览器提交的FORM数据，完成修改书籍信息的功能，并按要求返回HTML页面
+		<li>查询书籍：响应浏览器提交的FORM数据，完成查询书籍的功能，并按要求返回HTML页面
+		<li>添加读者：响应浏览器提交的FORM数据，完成添加读者的功能，并按要求返回HTML页面
+		<li>删除读者：响应浏览器提交的FORM数据，完成删除读者的功能，并按要求返回HTML页面
+		<li>修改读者信息：响应浏览器提交的FORM数据，完成修改读者信息的功能，并按要求返回HTML页面
+		<li>查询读者：响应浏览器提交的FORM数据，完成查询读者的功能，并按要求返回HTML页面
+		<li>查看某个读者未还书籍信息：响应浏览器提交的FORM数据，按要求返回HTML页面
+		<li>借书：响应浏览器提交的FORM数据，完成借书的功能，并按要求返回HTML页面
+		<li>还书：响应浏览器提交的FORM数据，完成还书的功能，并按要求返回HTML页面
+		<li>超期读者列表：响应浏览器的请求，完成超期读者列表的功能，并按要求返回HTML页面
+	</ol>
+	<li>FORM参数和返回格式</li>
+	上述14功能所响应的FORM数据的提交方式均为POST方式，FORM中的各个数据项的名称和要求，以及各个功能返回的HTML格式请双击打开教师提供的__index.htm文件（要允许活动脚本运行）。<br>
+	在页面左侧上方的<b>测试项目</b>下拉框中选择不同的功能项即可查看参数说明和返回要求。注意：
+	<ol>
+		<li>FORM参数的名称是以红色标注的,如：<span class="par"><b>书号</b>[<u>bID</u>]</span></li>
+		<li>标记有五角星的参数是必填项,如：<span class="par"><b>★书号</b>[<u>bID</u>]</span></li>
+		<li>参数说明下方是操作的返回的HTML页面格式说明，<b>尤其是其中的粗体红色部分</b>是必须严格按照格式生成的部分</li>
+	</ol>
+	<li>测试调试</li>
+	__index.htm页面也可用于测试你实现的上述14个页面功能。（然后通过浏览器使用：“ http://127.0.0.1/__index.htm“进行测试和调试）
+</ul>
+<hr>
+<li>提交要求</li>
+<ul>
+	<li>一份书面试验报告</li>
+	<ul>
+		<li>纸质报告一份<!--要求使用A4纸打印--></li>
+		<li>内容要求</li>
+		<ol>
+			<li>小组成员清单：按排名顺序写出小组所有成员的学号和姓名，作为评分依据之一</li>
+			<li>系统E-R图</li>
+			<!--li>一份E-R图
+			<li>表结构定义（<b>使用表格说明</b>）
+			<li><B>部分</B>核心代码(部分即可，1～3页即可，不需要全部代码)
+			<li>试验报告格式要求的其他部分，如试验目的、结论等等-->
+		</ol>
+	</ul>
+	<li>一份程序压缩包</li>
+	<ul>
+		<li>打包要求</li>
+		将需要提交的文件压缩到一个<b big>zip</b>zip<b big>后10位</b>，如：“0543178982.zip(<b>学号请使用半角数字，不可使用全角数字</b>)。如成员不只一个，请使用排名第一的成员的学号的后10位作为文件名，最后提交此压缩文件。压缩文件的内容包括：
+		<ol>
+			<li>readme.ini (下面会有对此文件内容规定的详细说明)</li>
+			<li>app.js (nodejs应用文件)</li>
+			<li>自己编写的其他nodejs模块文件(比如bbs例子中routes目录下的文件)</li>
+			<li>其他静态文件（如果有的话）：*.js;*.css;*.jpg;*.jpeg;*.gif……等等</li>
+			<li>如果你的网站应用还有子目录等结构，请在压缩包中保持相对目录结构（建议不要设置子目录）</li>
+		</ol>
+		!!!特别注意：<b big>不要</b>打包node运行环境的任何文件，如node主程序、npm、node_modules目录<br>
+		<li>redeme.ini文件说明</li>
+		<ul>
+			<li>内容</li>
+			此文件实际上是个纯文本文件，用于说明采用的脚本、数据库和小组成员的排名、学号、姓名，以及14个用于功能检查的URL入口相对路径，文件要求使用<b big>ansi或GBK或GB2312或ascii编码</b>方式。文件内容结构如下(<s big>仅保留蓝色部分</s>)：
+			<ul class="ini">
+				[STUDENT]<br>
+				no1=排名第一的学生的学号后10位,使用半角数字<br>
+				name1=排名第一的学生的姓名<br>
+				no2=排名第二的学生的学号后10位,使用半角数字<i>//可能没有这一行</i><br>
+				name2=排名第二的学生的姓名<i>//可能没有这一行</i><br>
+				no3=排名第三的学生的学号后10位,使用半角数字<i>//可能没有这一行</i><br>
+				name3=排名第三的学生的姓名<i>//可能没有这一行</i><br>
+				[URL]<br>
+				pagex=数据库初始化的入口URL<br>
+				page1=添加新书的入口URL<br>
+				page2=增加书籍数量的入口URL<br>
+				page3=删除/减少书籍的入口URL<br>
+				page4=修改书籍信息的入口URL<br>
+				page5=查询书籍的入口URL<br>
+				page6=添加读者的入口URL<br>
+				page7=删除读者的入口URL<br>
+				page8=修改读者信息的入口URL<br>
+				page9=查询读者的入口URL<br>
+				page10=查看某读者未还书籍信息的入口URL<br>
+				page11=借书的入口URL<br>
+				page12=还书的入口URL<br>
+				page13=超期读者列表的入口URL<br>
+			</ul>
+			<li>示例</li>
+			举例来说,小组中有两位同学分别名叫“张三“、“李四“，学号分别为“0123456789“、“0987654321“，其中张三排名第一；14个用于功能检查的入口URL按顺序分别为：init、func1、func2、……、func13，则readme.ini的内容应该是
+			<ul class="ini">
+				[STUDENT]<br>
+				no1=0123456789<br>
+				name1=张三<br>
+				no2=0987654321<br>
+				name2=李四<br>
+				[URL]<br>
+				pagex=init<br>
+				page1=func1<br>
+				page2=func2<br>
+				page3=func3<br>
+				page4=func4<br>
+				page5=func5<br>
+				page6=func6<br>
+				page7=func7<br>
+				page8=func8<br>
+				page9=func9<br>
+				page10=func10<br>
+				page11=func11<br>
+				page12=func12<br>
+				page13=func13<br>
+			</ul>
+		</ul>
+		<li>打包方法</li>
+		<ul>
+			<li>正确的打包方式</li>
+			在你的应用目录下，选中需要打包的文件和子目录，然后选中的条目上单击右键选择压缩<br>
+			<img src="__rarMenuOK.gif"><br><br>
+			使用正确方式打包后，双击打开压缩文件，看上去应该类似下图：<br>
+			<img src="__rarOK.gif"><br><br>
+			<li>错误的打包方式</li>
+			<img src="__rarMenuErr.gif"><br><br>
+			使用错误方式打包后，双击打开压缩文件，看上去会类似下图：<br>
+			<img src="__rarErr.gif">
+		</ul>
+	</ul>
+</ul>
+</body>
+</html>
+
