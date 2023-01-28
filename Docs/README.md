@@ -32,8 +32,9 @@
 >
 > * [ ] 开放域事件抽取（预计1周）
 >
->   * [ ] 数据集的构建
+>   * [ ] 数据集的构建（中短句、长篇，为什么？（统计tag））
 >   * [ ] 模型搭建、训练、测试
+>     * [ ] 单独的一句感叹句（今天真无聊！），没有包含任何事件信息，对社会心态的反映不起任何作用，没有意义，事件抽取时将其过滤。
 >
 >   * [ ] 模型训练与爬虫所得数据的直接耦合
 >
@@ -85,13 +86,13 @@
 >     }
 >     ```
 >
->   * [ ] 从微博的热门、社会、科技、电影、音乐、数码、汽车、游戏里面爬取数据，只爬点赞数量超过100或评论数量超过20的。
+>   * [x] 从微博的热门、社会、科技、电影、音乐、数码、汽车、游戏里面爬取数据，只爬点赞数量超过100或评论数量超过20的。
 >
->   * [ ] 将所有图片过滤掉，只保留文字。
+>   * [x] 将所有图片过滤掉，只保留文字。
 >
 >   * [ ] 尽可能爬取多的帖子和评论，对反爬手段采取合适的措施
 >
->   * [ ] 暂存本地
+>   * [x] 暂存本地
 >
 > * [ ] 抖音平台的爬取与数据清洗（预计1周）
 >
@@ -155,13 +156,13 @@
 >
 >   * [x] 热点地区变化时间图
 >
->* [ ] 热点事件页面设计（预计1周）
+>* [x] 热点事件页面设计（预计1周）
 >
->   * [ ] 热点事件列表（支持点击展开、筛选）
->      * [ ] 点击某一事件时，会有事件对应的心态分布图（热力地图、饼图或柱状图），评论词云
->      * [ ] 事件支持筛选：按地区、时间
->   * [ ] 热点事件关键词云
->   * [ ] 热点地区热力图（同首页）
+>   * [x] 热点事件列表（支持点击展开、筛选）
+>      * [x] 点击某一事件时，会有事件对应的心态分布图（热力地图、饼图或柱状图），评论词云
+>      * [x] 事件支持筛选：按地区、时间
+>   * [x] 热点事件关键词云
+>   * [x] 热点地区热力图（同首页）
 >
 >* [ ] 心态分析页面设计（预计1周）
 >
@@ -186,16 +187,16 @@
 
 主要任务：学习Django，腾讯云服务器的使用，网站后端搭建
 
-> * [ ] 学习后端技术（预计1周）
+> * [x] 学习后端技术（预计1周）
 >   * [x] 对Django基本操作的熟悉使用
->   * [ ] 学习使用pyecharts
+>   * [x] 学习使用pyecharts
 >
 > * [ ] 项目平台的云服务器配置与后端登录界面（预计1周）
->   * [ ] 腾讯云服务器的使用流程
+>   * [x] 腾讯云服务器的使用流程
 >
->     * [ ] 服务器密码：`#BeatsLeo110`
+>     * [x] 服务器密码：`#BeatsLeo110`
 >
->     * [ ] 服务器数据库信息
+>     * [x] 服务器数据库信息
 >   
 >       ```python
 >       DATABASES = {
@@ -210,20 +211,20 @@
 >       }
 >       ```
 >   
->   * [ ] 数据库的搭建
->     * [ ] 评论表：<u>comments_id</u>(自动增长INT), event_id(INT), content(CHAR(255)), time(DATE), province(Smallint)[0-34], thumbs(INT), attitude(INT)
+>   * [x] 数据库的搭建
+>     * [x] 评论表：<u>comments_id</u>(自动增长INT), event_id(INT), content(CHAR(255)), time(DATE), province(Smallint)[0-34], thumbs(INT), attitude(Smallint)[0-12]
 >
->     * [ ] 事件表：<u>event_id</u>(自动增长INT), event(CHAR(255)), post(CHAR(512)), time(DATE), province(Smallint)[0-34], thumbs(INT)
+>     * [x] 事件表：<u>event_id</u>(自动增长INT), event(CHAR(255)), post(CHAR(512)), time(DATE), province(Smallint)[0-34], thumbs(INT)
 >
->     * [ ] 模型训练表：<u>train_id</u>(自动增长INT), comments_id(INT), label(Smallint)[0-12]
+>     * [x] 模型训练表：<u>train_id</u>(自动增长INT), comments_id(INT), label(Smallint)[0-12]
 >
->     * [ ] 待校正表：<u>id</u>(自动增长INT), comments_id(INT), label(Smallint)[0-12]
+>     * [x] 待校正表：<u>id</u>(自动增长INT), comments_id(INT), label(Smallint)[0-12]
 >
 >       ---
 >
->     * [ ] 心态统计表：<u>id</u>(自动增长INT), comment_time(DATE), province(Smallint)[0-33], event_id(INT), attitude(INT)
+>     * [x] 心态统计表：<u>id</u>(自动增长INT), comment_time(DATE), province(Smallint)[0-34], event_id(INT), attitude(Smallint)[0-12]
 >
->     * [ ] 事件统计表：<u>id</u>(自动增长INT), event_time(DATE), province(Smallint)[0-33], event_id(INT), hot(INT)
+>     * [x] 事件统计表：<u>id</u>(自动增长INT), event_time(DATE), province(Smallint)[0-34], event_id(INT), hot(INT)
 >
 >   * [ ] 项目网站的登录、验证设置
 >   
@@ -255,8 +256,8 @@
 
 主要任务：学习Django，Vue和bootstrap，网站前端搭建
 
-> * [ ] 学习前端技术（预计1周）
->   * [ ] 学习Django的前端模板
+> * [x] 学习前端技术（预计1周）
+>   * [x] 学习Django的前端模板
 >   * [x] 学习bootstrap框架（CSS） 、Vue框架（JS）
 > * [ ] 根据周芳妍给出设计完成登录界面和首页的前端代码（预计2周）
 >   * [ ] 与周云弈协商，告诉后端需要什么数据
