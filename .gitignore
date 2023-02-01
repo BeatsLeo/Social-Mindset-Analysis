@@ -1,0 +1,4 @@
+**/rawdata
+**/dataset
+**/__pycache__
+*.gz
