@@ -1,0 +1,7 @@
+**/rawdata
+**/dataset
+**/.vscode
+**/__pycache__
+
+*.gz
+*.model
