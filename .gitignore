@@ -1,8 +1,8 @@
 **/rawdata
-**/dataset
 **/.vscode
 **/__pycache__
 
 *.gz
 *.model
+*.json
 服务器IP.md
