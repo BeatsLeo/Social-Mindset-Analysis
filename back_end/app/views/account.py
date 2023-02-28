@@ -25,7 +25,7 @@ class RegistModelForm(BootStrapModelForm):
 class LoginForm(BootStrapForm):
     l_username = forms.CharField(label="用户名", widget=forms.TextInput, required=True)   #required: 输入框不能为空(默认为True)
     l_password = forms.CharField(label="密码", widget=forms.PasswordInput(render_value=True), required=True)
-    code = forms.CharField(label="验证码", widget=forms.TextInput, required=True)
+    # code = forms.CharField(label="验证码", widget=forms.TextInput, required=True)
 
     def clean_l_password(self):
         pwd = self.cleaned_data.get('l_password', '')
@@ -33,32 +33,36 @@ class LoginForm(BootStrapForm):
 
 def login(request):
     """登录"""
-    if(request.method == 'GET'):
-        loginform = LoginForm()
-        return render(request, 'login.html', {'loginform': loginform})
+    # if(request.method == 'GET'):
+    #     # print("1")
+    #     loginform = LoginForm()
+    #     return render(request, 'login.html', {'loginform': loginform})
 
     if(request.POST.get("regist")):
         return redirect('/regist/')
+    print(request.POST)
     loginform = LoginForm(data=request.POST)
+    print(loginform.is_valid())
     if(loginform.is_valid()):
         # 验证成功后获取到的用户名密码
         # loginform.cleaned_data: 
         # {'username': 'xxx', 'password': 'xxx', 'code': '123'}
 
         # 验证码校验
-        user_input_code = loginform.cleaned_data.pop('code')
-        code = request.session.get('image_code', '')   # 由于有60s超时, 因此可能为空
-        if(code.upper() != user_input_code.upper()):
-            loginform.add_error('code', '验证码错误')
-            return render(request, 'login.html', {'loginform': loginform})
+        # user_input_code = loginform.cleaned_data.pop('code')
+        # code = request.session.get('image_code', '')   # 由于有60s超时, 因此可能为空
+        # if(code.upper() != user_input_code.upper()):
+        #     loginform.add_error('code', '验证码错误')
+        #     return render(request, 'login.html', {'loginform': loginform})
 
         # 去数据库校验用户名和密码是否正确
         logininfo = {'username': loginform.cleaned_data['l_username'], 'password': loginform.cleaned_data['l_password']}
         admin_object = models.Admin.objects.filter(**logininfo).first()
         if(not admin_object):
             # 主动为字段添加错误信息
-            loginform.add_error('l_password', '用户名或密码错误')
-            return render(request, 'login.html', {'loginform': loginform})
+            # loginform.add_error('l_password', '用户名或密码错误')
+            # return render(request, 'login.html', {'loginform': loginform})
+            return JsonResponse({'flag': False})
         
         # 用户名和密码正确
         # 网站生成随机字符串, 写到用户浏览器的cookie中, 再写入到session中
@@ -66,9 +70,9 @@ def login(request):
         # 设置session可以保存7天, 在获取验证码时设置为了60s, 因此需要设置回来
         request.session.set_expiry(60 * 60 * 24 * 7)
 
-        return redirect('/index/event_list/')
+        return JsonResponse({'flag': True})
     
-    return render(request, 'login.html', {'loginform': loginform})
+    # return render(request, 'login.html', {'loginform': loginform})
 
 @csrf_exempt
 def regist(request):

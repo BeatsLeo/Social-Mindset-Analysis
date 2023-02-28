@@ -3,8 +3,11 @@ from app import models
 from django.db.models import Q
 import numpy as np
 from django.http import JsonResponse
+from django.core import serializers
+from django.views.decorators.http import require_http_methods
 from django.db.models import Sum
 import operator
+import json
 
 COLOR = {'0': {'color': '#FFF2CC', 'rgb': (255, 242, 204)},
          '1': {'color': '#FFE699', 'rgb': (255, 230, 153)},
@@ -22,7 +25,7 @@ COLOR = {'0': {'color': '#FFF2CC', 'rgb': (255, 242, 204)},
 
 # 心态地图
 def attitude_map(request):
-    attitude_color={}
+    attitude_color= []
     # 打开文件
     province_map = {v: k for k, v in models.attitude_statistics.province_choices}
     print(province_map)
@@ -42,9 +45,9 @@ def attitude_map(request):
             g+=COLOR[str(c)]['rgb'][1]*attitude_map[c]
             b+= COLOR[str(c)]['rgb'][2] * attitude_map[c]
         if(r==0 and g==0 and b==0):
-            attitude_color[p] = '255, 255, 255'
+            attitude_color.append({p:'255, 255, 255'})
         else:
-            attitude_color[p]=str(r)+','+str(g)+','+str(b)
+            attitude_color.append({p:str(r)+','+str(g)+','+str(b)})
     print(attitude_color)
 
     return JsonResponse(attitude_color, safe=False)
@@ -64,29 +67,36 @@ def attitude_pie(request):
 # 心态柱状图
 def attitude_column(request):
     hot_count= {}
+
     # 打开文件
     province_map = {v: k for k, v in models.attitude_statistics.province_choices}
     province=list(province_map.keys())
     for p in province_map.values():
         pro=province[p]
-        hot_count[pro] =0
+        hot_count[pro]=0
         if(models.event_statistics.objects.filter(province=p).aggregate(Sum('hot'))['hot__sum']!=None):
+            # hot_count.append({pro: models.event_statistics.objects.filter(province=p).aggregate(Sum('hot'))['hot__sum']})
            hot_count[pro]=models.event_statistics.objects.filter(province=p).aggregate(Sum('hot'))['hot__sum']
 
     sorted_hot_count = dict(sorted(hot_count.items(), key=operator.itemgetter(1), reverse=True))
     print(sorted_hot_count)
-    return JsonResponse(sorted_hot_count, safe=False)
+    hot_count=[]
+    for k,v in sorted_hot_count.items():
+        hot_count.append({k:v})
+    print(hot_count)
+    return JsonResponse(hot_count, safe=False)
 
 # 热点事件列表
+@require_http_methods(["GET"])
 def event_list(request):
-    print(1)
-    search_data = request.GET.get('q', "")  # 获取查询参数
+    response = {}
+    search_data = request.GET.get('searchKeys', "")  # 获取查询参数
     con = Q()
     con.connector = 'OR'
 
     province_map = {v: k for k, v in models.attitude_statistics.province_choices}
     attitude_map = {v: k for k, v in models.attitude_statistics.attitude_choices}
-    # print(province_map)
+    print(province_map)
     # print(attitude_map)
 
     # 搜索框
@@ -103,10 +113,38 @@ def event_list(request):
                 attitude = attitude_map[str(text)]
                 con.children.append(('attitude', attitude))
 
+    print(con)
+
+    try:
+        # books = Book.objects.filter()
+        queryset = models.attitude_statistics.objects.filter(con)
+        print(queryset.values())
+        response['event_list']=[]
+        for object in queryset:
+            temp={}
+            temp['id'] = object.event_id.event_id
+            temp['name']=object.event_id.event
+            temp['num']=object.event_id.event_statistics_set.values('hot').first()['hot']
+            temp['type']=object.get_attitude_display()
+            temp['content'] = object.event_id.post
+            # response['event_list']['name'].append(object.event_id.event)
+            # response['event_list']['num'].append(object.event_id.event_statistics_set.values('hot').first()['hot'])
+            # response['event_list']['type'].append(object.get_attitude_display())
+            response['event_list'].append(temp)
+        # response['event_list'] = json.loads(serializers.serialize("json", queryset))
+        response['respMsg'] = 'success'
+        response['respCode'] = '000000'
+    except Exception as e:
+        response['respMsg'] = str(e)
+        response['respCode'] = '999999'
+
+    print(response)
+    return JsonResponse(response)
+
     # 根据搜索条件去数据库获取
-    queryset = models.attitude_statistics.objects.filter(con)
-    print(queryset.values())
+    # queryset = models.attitude_statistics.objects.filter(con)
+    # print(queryset.values())
 
 
-    return render(request, 'index.html',{'queryset':queryset})
+    # return render(request, 'index.html',{'queryset':queryset})
 

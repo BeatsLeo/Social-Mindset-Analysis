@@ -67,6 +67,17 @@ export default {
   },
   methods: {
     init(){
+      this.$http.get('http://127.0.0.1:8000/api/show_books')
+        .then((response) => {
+          var res = JSON.parse(response.bodyText)
+          console.log(res)
+          if (res.respCode === '000000') {
+            this.bookList = res['list']
+          } else {
+            this.$message.error('查询书籍失败')
+            console.log(res['respMsg'])
+          }
+        })
       ajax({
         url: '/xx/init.json',
         method: 'get',
