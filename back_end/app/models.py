@@ -176,7 +176,7 @@ class untrain(models.Model):
 
 # 5.心态统计表
 class attitude_statistics(models.Model):
-    id = models.ForeignKeyField(verbose_name='心态统计id', primary_key=True)
+    id = models.IntegerField(verbose_name='心态统计id', primary_key=True)
     comment_time = models.DateTimeField(verbose_name='心态时间')
     province_choices = (
         (0, '北京'),
@@ -236,6 +236,7 @@ class attitude_statistics(models.Model):
         (12, '无所谓'),
     )
     attitude = models.SmallIntegerField(verbose_name='心态', choices=attitude_choices)
+    comment_id = models.ForeignKey('comments',on_delete=models.CASCADE,verbose_name='评论id')
 
 
 # 6.事件统计表
