@@ -36,6 +36,11 @@ export default new Router({
           component: () => import('@/views/hotpointdetail.vue'),
         },
         {
+          path: '/analyse',
+          name: 'analyse',
+          component: () => import('@/views/analyse.vue'),
+        },
+        {
           path: '/suggest',
           name: 'suggest',
           component: () => import('@/views/suggest.vue'),

@@ -176,7 +176,7 @@ class untrain(models.Model):
 
 # 5.心态统计表
 class attitude_statistics(models.Model):
-    id = models.AutoField(verbose_name='心态统计id', primary_key=True)
+    id = models.ForeignKeyField(verbose_name='心态统计id', primary_key=True)
     comment_time = models.DateTimeField(verbose_name='心态时间')
     province_choices = (
         (0, '北京'),

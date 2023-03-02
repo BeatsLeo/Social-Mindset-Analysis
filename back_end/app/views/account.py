@@ -37,7 +37,6 @@ def login(request):
     #     # print("1")
     #     loginform = LoginForm()
     #     return render(request, 'login.html', {'loginform': loginform})
-
     if(request.POST.get("regist")):
         return redirect('/regist/')
     print(request.POST)
@@ -47,6 +46,7 @@ def login(request):
         # 验证成功后获取到的用户名密码
         # loginform.cleaned_data: 
         # {'username': 'xxx', 'password': 'xxx', 'code': '123'}
+
 
         # 验证码校验
         # user_input_code = loginform.cleaned_data.pop('code')
