@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+</head>
+<body>
+    <form  id="formRegist" novalidate>
+        <div class="form-group">
+            <label>用户名</label>
+            <input type="text" name="username" id="username">
+            <span class="error-msg" style="color: red; position: absolute;"></span>
+        </div>
+        <div class="form-group">
+            <label>密码</label>
+            <input type="text" name="password" id="password">
+            <span class="error-msg" style="color: red; position: absolute;"></span>
+        </div>
+        <button id="btnSave" type="button" class="btn btn-primary">保 存</button>
+    </form>
+</body>
+</html>
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/scripts.js' %}"></script>
+<script type="text/javascript">
+    $(function () {
+        bindBtnSaveEvent();
+    })
+
+    function bindBtnSaveEvent() {
+        $("#btnSave").click(function () {
+            // 清除错误信息
+            $(".error-msg").empty();
+
+            // 向后台发送请求
+            $.ajax({
+                url: "/regist/",
+                type: "post",
+                data: $("#formRegist").serialize(),
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.status) {
+                        alert("创建成功");
+                        // 刷新页面
+                        window.location='/login/';
+                    }
+                    else {
+                        // 把错误信息显示在对话框中
+                        $.each(res.error, function (name, errorList) {
+                            console.log(name)
+                            $("#" + name).next().text(errorList[0]);
+                        })  // 循环
+                    }
+                }
+            })
+        });
+    }
+
+</script>
