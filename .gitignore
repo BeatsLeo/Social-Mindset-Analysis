@@ -1,5 +1,6 @@
 **/rawdata
 **/.vscode
+**/.idea
 **/__pycache__
 
 *.gz
