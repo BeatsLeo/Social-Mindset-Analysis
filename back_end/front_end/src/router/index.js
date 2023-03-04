@@ -10,6 +10,11 @@ export default new Router({
       redirect: 'index',
     },
     {
+      path: '/register',
+      name: 'register',
+      component: () => import('@/views/register.vue'),
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/views/login.vue'),
@@ -36,9 +41,14 @@ export default new Router({
           component: () => import('@/views/hotpointdetail.vue'),
         },
         {
-          path: '/analyse',
-          name: 'analyse',
-          component: () => import('@/views/analyse.vue'),
+          path: '/analysisdetail',
+          name: 'analysisdetail',
+          component: () => import('@/views/analysisdetail.vue'),
+        },
+        {
+          path: '/analysis',
+          name: 'analysis',
+          component: () => import('@/views/analysis.vue'),
         },
         {
           path: '/suggest',

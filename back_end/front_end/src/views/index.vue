@@ -51,8 +51,8 @@ export default {
         gotopath = "/main";
       }else if(index === "2"){
         gotopath = "/hotpoint";
-      }else if(index === "2"){
-        gotopath = "/analyse";
+      }else if(index === "3"){
+        gotopath = "/analysis";
       }else if(index === "4"){
         gotopath = "/suggest";
       }else{

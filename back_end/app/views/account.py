@@ -1,13 +1,9 @@
-import json
-
 from django import forms
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render, redirect, HttpResponse
-
+from django.shortcuts import redirect
 from app import models
 from app.utils.encrypt import md5
-from app.utils.code import check_code
 from app.utils.bootstrap import BootStrapForm, BootStrapModelForm
 
 class RegistModelForm(BootStrapModelForm):
@@ -23,9 +19,8 @@ class RegistModelForm(BootStrapModelForm):
 
 
 class LoginForm(BootStrapForm):
-    l_username = forms.CharField(label="用户名", widget=forms.TextInput, required=True)   #required: 输入框不能为空(默认为True)
+    l_username = forms.CharField(label="用户名", widget=forms.TextInput, required=True)
     l_password = forms.CharField(label="密码", widget=forms.PasswordInput(render_value=True), required=True)
-    # code = forms.CharField(label="验证码", widget=forms.TextInput, required=True)
 
     def clean_l_password(self):
         pwd = self.cleaned_data.get('l_password', '')
@@ -33,35 +28,12 @@ class LoginForm(BootStrapForm):
 
 def login(request):
     """登录"""
-    # if(request.method == 'GET'):
-    #     # print("1")
-    #     loginform = LoginForm()
-    #     return render(request, 'login.html', {'loginform': loginform})
-    if(request.POST.get("regist")):
-        return redirect('/regist/')
-    print(request.POST)
     loginform = LoginForm(data=request.POST)
-    print(loginform.is_valid())
     if(loginform.is_valid()):
-        # 验证成功后获取到的用户名密码
-        # loginform.cleaned_data: 
-        # {'username': 'xxx', 'password': 'xxx', 'code': '123'}
-
-
-        # 验证码校验
-        # user_input_code = loginform.cleaned_data.pop('code')
-        # code = request.session.get('image_code', '')   # 由于有60s超时, 因此可能为空
-        # if(code.upper() != user_input_code.upper()):
-        #     loginform.add_error('code', '验证码错误')
-        #     return render(request, 'login.html', {'loginform': loginform})
-
         # 去数据库校验用户名和密码是否正确
         logininfo = {'username': loginform.cleaned_data['l_username'], 'password': loginform.cleaned_data['l_password']}
         admin_object = models.Admin.objects.filter(**logininfo).first()
         if(not admin_object):
-            # 主动为字段添加错误信息
-            # loginform.add_error('l_password', '用户名或密码错误')
-            # return render(request, 'login.html', {'loginform': loginform})
             return JsonResponse({'flag': False})
         
         # 用户名和密码正确
@@ -71,38 +43,16 @@ def login(request):
         request.session.set_expiry(60 * 60 * 24 * 7)
 
         return JsonResponse({'flag': True})
-    
-    # return render(request, 'login.html', {'loginform': loginform})
 
 @csrf_exempt
 def regist(request):
-    if (request.method == 'GET'):
-        registform = RegistModelForm()
-        return render(request, 'regist.html', {'registform': registform})
     """注册"""
     registform = RegistModelForm(data=request.POST)
     if(registform.is_valid()):
         registform.save()
-        return JsonResponse({'status': True})
+        return JsonResponse({'flag': True})
 
-    return JsonResponse({'status': False, 'error': registform.errors})
-
-from io import BytesIO
-
-def image_code(request):
-    """生成图片验证码"""
-    # 调用pillow函数, 生成图片
-    img, code_string = check_code()
-    
-    # 写入到自己的session中(以便于后序获取验证码再进行校验)
-    request.session['image_code'] = code_string
-    # 给session设置60s超时
-    request.session.set_expiry(60)
-
-    stream = BytesIO()  # 二进制IO的内存(buffer)
-    img.save(stream, 'png') # 向内存写入二进制数据流(图片的原始数据)
-
-    return HttpResponse(stream.getvalue())
+    return JsonResponse({'flag': False, 'error': registform.errors})
 
 @csrf_exempt
 def editpsw(request):

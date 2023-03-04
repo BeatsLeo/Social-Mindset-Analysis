@@ -196,27 +196,6 @@ export default {
       this.myChart = echarts.init(this.$refs.char);
       this.myChart.setOption(this.option);
     },
-    init2() {
-      // init2() {
-      // 	this.citydata.sort((a, b) => {
-      // 		return b.value - a.value;
-      // 	});
-      // 	for (var i = 0; i < 6; i++) {
-      // 		var top10 = {
-      // 			name: this.citydata[i].name,
-      // 			value: this.citydata[i].value
-      // 		};
-      // 		this.bartop6.push(top10);
-      // 		this.dataShadow.push(this.yMax);
-      // 	}
-      // 	this.bartop6.sort((a, b) => {
-      // 		return a.value - b.value;
-      // 	});
-      // 	for (var i = 0; i < this.bartop6.length; i++) {
-      // 		this.titledata.push(this.bartop6[i].name);
-      // 	}
-      // }
-    },
   },
 	mounted() {
 		this.init();

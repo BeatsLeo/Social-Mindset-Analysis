@@ -127,7 +127,7 @@ class event(models.Model):
 # 3.模型训练表
 class train(models.Model):
     train_id = models.AutoField(verbose_name='训练id', primary_key=True)
-    comments_id = models.ForeignKey('comments',on_delete=models.CASCADE, db_column='comments_id')
+    comments_id = models.ForeignKey('comments_statistics',on_delete=models.CASCADE, db_column='comments_id')
     label_choices = (
         # 0-4: 积极
         (0, '高兴'),
@@ -152,7 +152,7 @@ class train(models.Model):
 # 4.待校正表
 class untrain(models.Model):
     id = models.AutoField(verbose_name='待校正id', primary_key=True)
-    comments_id = models.ForeignKey('comments',on_delete=models.CASCADE, db_column='comments_id')
+    comments_id = models.ForeignKey('comments_statistics',on_delete=models.CASCADE, db_column='comments_id')
     label_choices = (
         # 0-4: 积极
         (0, '高兴'),
@@ -174,10 +174,11 @@ class untrain(models.Model):
     label = models.SmallIntegerField(verbose_name='心态标签', choices=label_choices)
 
 
-# 5.心态统计表
-class attitude_statistics(models.Model):
-    id = models.IntegerField(verbose_name='心态统计id', primary_key=True)
+# 5.评论统计表
+class comments_statistics(models.Model):
+    comments_id = models.AutoField(verbose_name='心态统计id', primary_key=True)
     comment_time = models.DateTimeField(verbose_name='心态时间')
+    content = models.CharField(verbose_name='内容', max_length=255)
     province_choices = (
         (0, '北京'),
         (1, '天津'),
@@ -236,6 +237,7 @@ class attitude_statistics(models.Model):
         (12, '无所谓'),
     )
     attitude = models.SmallIntegerField(verbose_name='心态', choices=attitude_choices)
+    thumbs = models.IntegerField(verbose_name='点赞数')
 
 
 # 6.事件统计表

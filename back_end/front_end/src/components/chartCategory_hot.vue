@@ -21,8 +21,6 @@ export default {
     }
     province=JSON.parse(JSON.stringify(province))
     hot=JSON.parse(JSON.stringify(hot))
-    console.log(province)
-    console.log(hot)
 		return {
 			option: {
         tooltip:{

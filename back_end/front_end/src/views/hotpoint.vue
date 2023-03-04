@@ -54,7 +54,6 @@
             <span>{{item.name}}</span>
           </div>
           <div class="other">
-            <span class="actor">{{item.actor}}</span>
             <span class="num"><i class="el-icon-s-opportunity"></i>{{item.num}}</span>
             <span class="type">{{item.type}}</span>
           </div>
@@ -67,7 +66,7 @@
 
     <el-col :span="2">&nbsp;</el-col>
 
-    <el-col :span="11">
+    <el-col :span="11" v-if="ShowPage">
       <el-row>
         <h2><i class="el-icon-cloudy"></i>&nbsp;热点事件关键词云</h2>
         <el-divider></el-divider>
@@ -75,7 +74,7 @@
           <word-cloud :worddata="wordData"></word-cloud>
         </div>
       </el-row>
-      <el-row v-if="ShowPage">
+      <el-row>
         <h2><i class="el-icon-s-opportunity"></i>&nbsp;热点地区热力图</h2>
         <el-divider></el-divider>
         <el-col :span="12">
@@ -99,11 +98,6 @@ import qs from 'qs';
 import wordCloud from '@/components/wordCloud.vue';
 import ChinaMap from '@/components/chinaMap.vue';
 import ChartCategory from '@/components/chartCategory_hot.vue';
-// import hotList from "../testdata/hotList";
-import wordData from "../testdata/wordData";
-// import mapData from "../testdata/mapData";
-import chartCategoryData from "../testdata/chartCategoryData";
-// import dqData from "../testdata/dqData";
 import mentalityData from "../testdata/mentalityData";
 
 export default {
@@ -112,7 +106,7 @@ export default {
       searchLoading: false,
 
       hotList:[],
-      wordData,
+      wordData:[],
       mapData:[],
       chartCategoryData:[],
       dqData:[],
@@ -120,6 +114,7 @@ export default {
       ShowPage:false,
       flag_map:false,
       flag_column:false,
+      flag_word_cloud:false,
 
       query_dq: "",
       query_mentality: "",
@@ -140,13 +135,11 @@ export default {
   methods: {
     search(){
       this.searchLoading = true;
-      console.log(this.query_date)
       if(this.query_date){
         for(var i=0;i<=1;i++){
-         this.query_date[i] = this.dayjs(this.query_date[i]).format("YYYY-MM-DD")
+          this.query_date[i] = this.dayjs(this.query_date[i]).format("YYYY-MM-DD")
+        }
       }
-      }
-      console.log(this.query_date)
       var da={}
       da={
           dq:this.query_dq ,
@@ -156,27 +149,17 @@ export default {
           curPage: 0,
           pageSize: this.pageSize,
       }
-      // alert(qs.stringify(da,{arrayFormat:'repeat'}))
       da=qs.stringify(da,{arrayFormat:'repeat'})
       ajax({
         url: 'http://127.0.0.1:8000/api/rdsj/event_list/?'+da,
         method: 'get',
-        // params: da,
       })
         .then((data) => {
-          // console.log(data)
-          // // var res = JSON.parse(data)
-          // // alert(res)
-          // console.log(data['event_list'])
           if (data['respCode'] === '000000') {
             this.hotList = data['event_list']
             this.dqData = data['province_map']
-            // this.mapData = data.data.mapData;
-            this.wordData = data.data.wordData;
-            // this.chartCategoryData = data.data.chartCategoryData;
           } else {
             this.$message.error('获取信息失败')
-            console.log(data['respMsg'])
           }
         })
         .catch((error) => {
@@ -185,6 +168,7 @@ export default {
         .finally(() => {
           this.searchLoading = false;
         });
+
       ajax({
         url: 'http://127.0.0.1:8000/api/index/attitude_map/',
         method: 'get',
@@ -192,13 +176,11 @@ export default {
         }
       })
         .then((data) => {
-          console.log("1")
-          console.log(JSON.parse(JSON.stringify(data)))
+          console.log("attitude_map:",JSON.parse(JSON.stringify(data)))
           this.mapData=JSON.parse(JSON.stringify(data));
           this.flag_map=true;
-          if(this.flag_column){
+          if(this.flag_column&&this.flag_word_cloud){
             this.ShowPage = true;
-            console.log("2222")
           }
         })
         .catch((error) => {
@@ -206,6 +188,7 @@ export default {
         })
         .finally(() => {
         });
+
       ajax({
         url: 'http://127.0.0.1:8000/api/index/attitude_column/',
         method: 'get',
@@ -213,13 +196,31 @@ export default {
         }
       })
         .then((data) => {
-          console.log("1")
-          console.log(JSON.parse(JSON.stringify(data)))
+          console.log("attitude_column:",JSON.parse(JSON.stringify(data)))
           this.chartCategoryData=JSON.parse(JSON.stringify(data));
           this.flag_column=true;
-          if(this.flag_map){
+          if(this.flag_map&&this.flag_word_cloud){
             this.ShowPage = true;
-            console.log("11111")
+          }
+        })
+        .catch((error) => {
+          this.$message.error('接口调用异常：'+error);
+        })
+        .finally(() => {
+        });
+
+      ajax({
+        url: 'http://127.0.0.1:8000/api/index/event_cloud/',
+        method: 'get',
+        params: {
+        }
+      })
+        .then((data) => {
+          console.log("event_cloud:",JSON.parse(JSON.stringify(data)))
+          this.wordData=JSON.parse(JSON.stringify(data));
+          this.flag_word_cloud=true;
+          if(this.flag_map&&this.flag_column){
+            this.ShowPage = true;
           }
         })
         .catch((error) => {
@@ -296,17 +297,14 @@ export default {
       font-weight: 600;
       display: none;
 
-      .actor{
-        padding: 10px;
-      }
 
       .num{
-        margin-left: 30px;
         padding: 10px;
       }
 
       .type{
-        margin-left: 60px;
+        //float: right;
+        margin-left: 450px;
         padding: 10px;
         background: radial-gradient(ellipse 20px 8px at 50%, #c5e0b4b7, #fff0);
       }

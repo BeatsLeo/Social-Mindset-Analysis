@@ -7,11 +7,13 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import dayjs from 'dayjs'
 import VueCookies from 'vue-cookies'
+import axios from "axios";
 
 Vue.use(VueCookies)
 Vue.prototype.dayjs = dayjs;
 Vue.config.productionTip = false
 Vue.use(ElementUI);
+// axios.defaults.baseURL = 'http://127.0.0.1:8000'
 
 /* eslint-disable no-new */
 new Vue({

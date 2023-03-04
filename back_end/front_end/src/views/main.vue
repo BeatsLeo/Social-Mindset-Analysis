@@ -9,7 +9,7 @@
       <el-col :span="2">&nbsp;</el-col>
     </el-row>
     <el-row>
-      <el-input placeholder="请输入热点事件、心态、时间、地区等，多个关键词用空格隔开" v-model="searchKeys" class="input-with-select">
+      <el-input placeholder="请输入热点事件、心态、地区等" v-model="searchKeys" class="input-with-select">
         <el-button slot="append" icon="el-icon-search" @click="search()" :loading="searchLoading"></el-button>
       </el-input>
     </el-row>
@@ -24,7 +24,6 @@
               <span>{{item.name}}</span>
             </div>
             <div class="other">
-              <span class="actor">{{item.actor}}</span>
               <span class="num"><i class="el-icon-s-opportunity"></i>{{item.num}}</span>
               <span class="type">{{item.type}}</span>
             </div>
@@ -47,13 +46,8 @@
 <script>
 import ajax from '../axios';
 import ChinaMap from '@/components/chinaMap.vue';
-// import hotList from "../testdata/hotList";
-// import mapData from "../testdata/mapData";
 
 export default {
-  // props: {
-  //   mapData: Array,
-  // },
   data () {
     return {
       searchKeys: "",
@@ -97,8 +91,7 @@ export default {
         }
       })
         .then((data) => {
-          console.log("1")
-          console.log(JSON.parse(JSON.stringify(data)))
+          console.log("attitude_map:",JSON.parse(JSON.stringify(data)))
           this.mapData=JSON.parse(JSON.stringify(data));
           this.ShowPage = true;
         })
@@ -124,16 +117,10 @@ export default {
         }
       })
         .then((data) => {
-         console.log(data)
-          // var res = JSON.parse(data)
-          // alert(res)
-          console.log(data['event_list'])
-          console.log(data['respCode'])
           if (data['respCode'] === '000000') {
             this.hotList = data['event_list']
           } else {
             this.$message.error('获取信息失败')
-            console.log(data['respMsg'])
           }
         })
         .catch((error) => {
@@ -232,17 +219,13 @@ export default {
       font-weight: 600;
       display: none;
 
-      .actor{
-        padding: 10px;
-      }
-
       .num{
-        margin-left: 30px;
+        //margin-left: 30px;
         padding: 10px;
       }
 
       .type{
-        margin-left: 60px;
+        margin-left: 300px;
         padding: 10px;
         background: radial-gradient(ellipse 20px 8px at 50%, #c5e0b4b7, #fff0);
       }

@@ -11,7 +11,6 @@ export default {
   },
 	data() {
     this.attitude_count=JSON.parse(JSON.stringify(this.attitude_count))
-    console.log(this.attitude_count[0][0])
 		return {
 			option: {
         tooltip:{

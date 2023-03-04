@@ -1,7 +1,7 @@
 <template>
 	<div ref="wordcloud" class="wordcloud"></div>
 </template>
- 
+
 <script>
 import echarts from 'echarts';
 import 'echarts-wordcloud';
@@ -32,8 +32,8 @@ export default {
           series: [
             {
               type: 'wordCloud',
-              left: '0%',    
-              right: '0%',              
+              left: '0%',
+              right: '0%',
               top: '5%',                  // Y轴偏移量
               width: '100%',               // canvas宽度大小
               height: '100%',              // canvas高度大小
@@ -96,7 +96,7 @@ export default {
 	}
 };
 </script>
- 
+
 <style lang="less" scoped>
 .wordcloud {
   width: 100%;
