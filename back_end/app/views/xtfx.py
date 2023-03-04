@@ -67,12 +67,32 @@ def attitude_detail(request, attitude):
 
 #评论列表
 def comment_list(request):
+    response={}
     attitude_map = {v: k for k, v in models.attitude_statistics.attitude_choices}
     # print(attitude_map)
+    for k, v in attitude_map.items():
+        temp = {}
+        temp['id'] = v
+        temp['name'] = k
+        response['attitude_map'].append(temp)
 
     # 根据搜索条件去数据库获取
-    queryset = models.comments.objects.all()
+    queryset = models.attitude_statistics.objects.all()
     print(queryset)
+    for object in queryset:
+        temp = {}
+        temp['id'] = object.comment_id.comments_id
+        temp['name'] = object.event_id.event
+        temp['num'] = object.event_id.event_statistics_set.values('hot').first()['hot']
+        temp['type'] = object.get_attitude_display()
+        temp['content'] = object.event_id.post
+        # response['event_list']['name'].append(object.event_id.event)
+        # response['event_list']['num'].append(object.event_id.event_statistics_set.values('hot').first()['hot'])
+        # response['event_list']['type'].append(object.get_attitude_display())
+        response['event_list'].append(temp)
+    # response['event_list'] = json.loads(serializers.serialize("json", queryset))
+    response['respMsg'] = 'success'
+    response['respCode'] = '000000'
 
     # 校正心态
     attitude = request.POST.get('attitudes', "")
@@ -83,7 +103,10 @@ def comment_list(request):
     print(attitude)
     if(commentsId and attitude):
         models.comments.objects.filter(comments_id=commentsId).update(attitude=attitude_map[str(attitude)])
-        # models.attitude_statistics.objects.filter(comment_time=commentsTime).update(attitude=attitude_map[str(attitude)])
-        return redirect("/xtfx/comment_list/")
 
+        # models.attitude_statistics.objects.filter(comment_time=commentsTime).update(attitude=attitude_map[str(attitude)])
+        # return redirect("/xtfx/comment_list/")
+
+    print(response)
+    return JsonResponse(response)
     return render(request, 'xtfx.html',{'queryset':queryset,'attitude_map':attitude_map})
