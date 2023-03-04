@@ -23,6 +23,20 @@
           <div class="itemClass" @click="detail(item)">
             <div class="title">
               <span>{{item.name}}</span>
+              <el-col :span="2">&nbsp;</el-col>
+              <el-select v-model="query_mentality" multiple collapse-tags placeholder="心态" @change="search()" size="mini">
+              <el-option-group
+                v-for="item in mentalityData"
+                :key="item.group"
+                :label="item.group">
+                <el-option
+                  v-for="i in item.options"
+                  :key="i.id"
+                  :label="i.name"
+                  :value="i.id">
+                </el-option>
+              </el-option-group>
+            </el-select>
             </div>
             <div class="other">
               <span class="actor">{{item.actor}}</span>
@@ -123,7 +137,7 @@ export default {
     },
     handle(){
       this.handleContent= this.e + "===="+this.m+ "======为贯彻落实我党“加快用互联网信息技术推进社会治理”的要求，本项目拟构建基于开放域事件提取的社会心态交互式挖掘与引导系统，挖掘社会心态的演化机制，摸清其事件原因。依托Erlangshen-Bert等预训练模型，本项目提出基于人在环路、开放域事件抽取与分析的技术框架，形成针对社会心态的智能监控、分析、归因和引导的一体化解决方案，为社会治理提供建议";
-    
+
       ajax({
         url: '/xx/handle.json',
         method: 'get',
@@ -144,7 +158,17 @@ export default {
         })
         .finally(() => {
         });
-      }
+      },
+      detail(item){
+      console.info(item);
+      this.$router.push({
+        path: "/analysisdetail",
+        query: {
+          id: item.id,
+          active: this.$route.query.active
+        },
+      },()=>{},()=>{});
+    }
   }
 }
 </script>

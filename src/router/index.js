@@ -41,6 +41,11 @@ export default new Router({
           component: () => import('@/views/hotpointdetail.vue'),
         },
         {
+          path: '/analysisdetail',
+          name: 'analysisdetail',
+          component: () => import('@/views/analysisdetail.vue'),
+        },
+        {
           path: '/analysis',
           name: 'analysis',
           component: () => import('@/views/analysis.vue'),
