@@ -85,9 +85,9 @@ def comments_list(request):
     print("commentsId:",commentsId)
     print("attitude:",attitude)
     if (commentsId and attitude):
-        print("111111111111111")
         models.train.objects.create(label=attitude, comments_id_id=commentsId)
-        models.untrain.objects.filter(id=commentsId).delete()
+        models.untrain.objects.filter(comments_id_id=commentsId).delete()
+        print("11111")
 
         return JsonResponse({'respMsg':'success','respCode':'000000'})
 
