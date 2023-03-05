@@ -284,6 +284,25 @@ class event_statistics(models.Model):
         (34, '其他'),
     )
     province = models.SmallIntegerField(verbose_name='省份', choices=province_choices)
+    attitude_choices = (
+        # 0-4: 积极
+        (0, '高兴'),
+        (1, '搞笑'),
+        (2, '期待'),
+        (3, '肯定'),
+        (4, '感动'),
+        # 5-9: 消极
+        (5, '悲伤'),
+        (6, '愤怒'),
+        (7, '厌恶'),
+        (8, '担心'),
+        (9, '无聊'),
+        # 10-12: 中性
+        (10, '警惕'),
+        (11, '惊讶'),
+        (12, '无所谓'),
+    )
+    attitude = models.SmallIntegerField(verbose_name='心态', choices=attitude_choices)
     hot = models.IntegerField(verbose_name='热度')
 
 # 7.事件信息表

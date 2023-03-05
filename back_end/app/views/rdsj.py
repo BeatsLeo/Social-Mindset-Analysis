@@ -136,17 +136,17 @@ def event_list(request):
 
     # 根据搜索条件去数据库获取
     try:
-        queryset = models.comments_statistics.objects.filter(s)
+        queryset = models.event_statistics.objects.filter(s)
         response['event_list'] = []
         response['province_map'] = []
         response['attitude_map'] = []
         for object in queryset:
             temp = {}
-            temp['id'] = object.event_id.event_id
-            temp['name'] = object.event_id.summary
-            temp['num'] = object.event_id.hot
+            temp['id'] = object.event_id
+            temp['name'] = object.summary
+            temp['num'] = object.hot
             temp['type'] = object.get_attitude_display()
-            temp['content'] = object.event_id.post
+            temp['content'] = object.post
             response['event_list'].append(temp)
         response['respMsg'] = 'success'
         response['respCode'] = '000000'
