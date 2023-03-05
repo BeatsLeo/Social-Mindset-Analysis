@@ -44,7 +44,7 @@
           </el-col>
           <el-col :span="12">
             <div class="chartPie" >
-              <chart-pie :attitude_count="chartCategoryData"></chart-pie>
+              <chart-pie :attitude_count="chartPieData"></chart-pie>
             </div>
           </el-col>
         </el-row>
@@ -276,6 +276,10 @@ export default {
 
 
   .chartCategory{
+    width: 100%;
+    height: 200px;
+  }
+  .chartPie{
     width: 100%;
     height: 200px;
   }
