@@ -103,40 +103,40 @@ def event_list(request):
     date = request.GET.getlist('date')  # 时间
     # 复选条件-时间——》筛选器
     if(date.__len__()==2):
-        s.children.append(('comment_time__range', (date[0], date[1])))
+        s.children.append(('event_distribution__event_time__range', (date[0], date[1])))
 
     # 搜索框
     if (search_data):
-        q.children.append(('event_id__summary__icontains', search_data))
-        q.children.append(('event_id__post__icontains', search_data))
+        q.children.append(('summary__icontains', search_data))
+        q.children.append(('post__icontains', search_data))
 
         for p in province_map.keys():
             if search_data in p:
                 province = province_map[str(p)]
-                q.children.append(('province', province))
+                q.children.append(('event_distribution__province', province))
 
         for a in attitude_map.keys():
             if search_data in a:
                 attitude = attitude_map[str(a)]
-                q.children.append(('attitude', attitude))
+                q.children.append(('total_attitudes', attitude))
 
     # 复选条件-地区——》筛选器
     if(provinces):
         for p in provinces:
-            P.children.append(('province',p))
+            P.children.append(('event_distribution__province',p))
 
     # 复选条件-心态——》筛选器
     if(attitudes):
         for a in attitudes:
-            A.children.append(('attitude', a))
+            A.children.append(('total_attitudes', a))
 
     s.add(q,'AND')
     s.add(P, 'AND')
     s.add(A, 'AND')
-
+    print(s)
     # 根据搜索条件去数据库获取
     try:
-        queryset = models.event_statistics.objects.filter(s)
+        queryset = models.event_statistics.objects.filter(s).distinct()
         response['event_list'] = []
         response['province_map'] = []
         response['attitude_map'] = []
@@ -144,8 +144,8 @@ def event_list(request):
             temp = {}
             temp['id'] = object.event_id
             temp['name'] = object.summary
-            temp['num'] = object.hot
-            temp['type'] = object.get_attitude_display()
+            temp['num'] = models.event_distribution.objects.filter(event_id__event_id=temp['id']).aggregate(nums=Sum('hot'))['nums']
+            temp['type'] = object.get_total_attitudes_display()
             temp['content'] = object.post
             response['event_list'].append(temp)
         response['respMsg'] = 'success'

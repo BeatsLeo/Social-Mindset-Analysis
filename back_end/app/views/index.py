@@ -69,14 +69,16 @@ def attitude_pie(request):
 # 心态柱状图
 def attitude_column(request):
     hot_count= {}
+    count=0
 
     province_map = {v: k for k, v in models.comments_statistics.province_choices}
     province=list(province_map.keys())
     for p in province_map.values():
         pro=province[p]
         hot_count[pro]=0
-        if(models.event_statistics.objects.filter(province=p).aggregate(Sum('hot'))['hot__sum']!=None):
-           hot_count[pro]=models.event_statistics.objects.filter(province=p).aggregate(Sum('hot'))['hot__sum']
+        count=models.event_distribution.objects.filter(province=p).aggregate(Sum('hot'))['hot__sum']
+        if(count!=None):
+           hot_count[pro]=count
     sorted_hot_count = dict(sorted(hot_count.items(), key=operator.itemgetter(1), reverse=True))
 
     hot_count=[]
@@ -112,30 +114,33 @@ def event_list(request):
 
     # 搜索框
     if (search_data):
-        con.children.append(('event_id__summary__icontains', search_data))
-        con.children.append(('event_id__post__icontains', search_data))
+        con.children.append(('summary__icontains', search_data))
+        con.children.append(('post__icontains', search_data))
 
         for text in province_map.keys():
             if search_data in text:
                 province = province_map[str(text)]
-                con.children.append(('province', province))
+                con.children.append(('event_distribution__province', province))
 
         for text in attitude_map.keys():
             if search_data in text:
                 attitude = attitude_map[str(text)]
-                con.children.append(('attitude', attitude))
+                con.children.append(('total_attitudes', attitude))
 
     try:
         queryset = models.event_statistics.objects.filter(con)
+        # models.event_statistics.objects.filter(event_distribution__province=)
         response['event_list']=[]
         for object in queryset:
             temp={}
             temp['id'] = object.event_id
             temp['name']=object.summary
-            temp['num']=object.hot
-            temp['type']=object.get_attitude_display()
+            print("sum:",models.event_distribution.objects.filter(event_id__event_id=temp['id']).aggregate(nums=Sum('hot'))['nums'])
+            temp['num']=models.event_distribution.objects.filter(event_id__event_id=temp['id']).aggregate(nums=Sum('hot'))['nums']
+            temp['type']=object.get_total_attitudes_display()
             temp['content'] = object.post
             response['event_list'].append(temp)
+            print(response['event_list'])
         response['respMsg'] = 'success'
         response['respCode'] = '000000'
     except Exception as e:

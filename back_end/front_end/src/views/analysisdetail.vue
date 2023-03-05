@@ -240,17 +240,13 @@
         font-weight: 600;
         display: none;
 
-        .actor{
-          padding: 10px;
-        }
 
         .num{
-          margin-left: 30px;
           padding: 10px;
         }
 
         .type{
-          margin-left: 60px;
+          margin-left: 400px;
           padding: 10px;
           background: radial-gradient(ellipse 20px 8px at 50%, #c5e0b4b7, #fff0);
         }

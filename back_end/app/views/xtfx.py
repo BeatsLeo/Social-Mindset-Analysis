@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from app import models
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.views.decorators.http import require_http_methods
 
 # 评论词云
@@ -27,7 +27,7 @@ def comments_detail(request):
     P.connector = 'OR'
 
     attitudeId = request.GET.get('id', "")  # 获取查询参数
-    con.children.append(('attitude', attitudeId))
+    con.children.append(('total_attitudes', attitudeId))
 
     province_map = {v: k for k, v in models.comments_statistics.province_choices}
 
@@ -36,25 +36,25 @@ def comments_detail(request):
     date = request.GET.getlist('date')  # 时间
     # 复选条件-时间——》筛选器
     if (date.__len__() == 2):
-        con.children.append(('comment_time__range', (date[0], date[1])))
+        con.children.append(('event_distribution__event_time__range', (date[0], date[1])))
 
     # 复选条件-地区——》筛选器
     if (provinces):
         for p in provinces:
-            P.children.append(('province', p))
+            P.children.append(('event_distribution__province', p))
 
     con.add(P,'AND')
     # 根据搜索条件去数据库获取
     try:
-        queryset = models.event_statistics.objects.filter(con)
+        queryset = models.event_statistics.objects.filter(con).distinct()
         response['event_list'] = []
         response['province_map'] = []
         for object in queryset:
             temp = {}
             temp['id'] = object.event_id
             temp['name'] = object.summary
-            temp['num'] = object.hot
-            temp['type'] = object.get_attitude_display()
+            temp['num'] = models.event_distribution.objects.filter(event_id__event_id=temp['id']).aggregate(nums=Sum('hot'))['nums']
+            temp['type'] = object.get_total_attitudes_display()
             temp['content'] = object.post
             response['event_list'].append(temp)
         response['respMsg'] = 'success'

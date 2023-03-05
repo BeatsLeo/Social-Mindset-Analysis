@@ -245,6 +245,42 @@ class event_statistics(models.Model):
     event_id = models.AutoField(verbose_name='事件统计id', primary_key=True)
     post = models.CharField(verbose_name='内容', max_length=512)
     summary = models.CharField(verbose_name='总结', max_length=255)
+    time = models.CharField(verbose_name='时间', max_length=32,blank=True)
+    place = models.CharField(verbose_name='地点', max_length=32,blank=True)
+    trigger = models.CharField(verbose_name='触发器', max_length=32,blank=True)
+    people = models.CharField(verbose_name='人物', max_length=32,blank=True)
+    things = models.CharField(verbose_name='事情', max_length=32,blank=True)
+    moves = models.CharField(verbose_name='动作', max_length=32,blank=True)
+    events = models.CharField(verbose_name='事件', max_length=32,blank=True)
+    institution = models.CharField(verbose_name='机构', max_length=32,blank=True)
+    numbers = models.CharField(verbose_name='数量', max_length=32,blank=True)
+    unit = models.CharField(verbose_name='单元', max_length=32,blank=True)
+    reason = models.CharField(verbose_name='原因', max_length=32,blank=True)
+    attitude_choices = (
+        # 0-4: 积极
+        (0, '高兴'),
+        (1, '搞笑'),
+        (2, '期待'),
+        (3, '肯定'),
+        (4, '感动'),
+        # 5-9: 消极
+        (5, '悲伤'),
+        (6, '愤怒'),
+        (7, '厌恶'),
+        (8, '担心'),
+        (9, '无聊'),
+        # 10-12: 中性
+        (10, '警惕'),
+        (11, '惊讶'),
+        (12, '无所谓'),
+    )
+    total_attitudes = models.SmallIntegerField(verbose_name='心态', choices=attitude_choices)
+
+
+# 7.事件分布
+# 表
+class event_distribution(models.Model):
+    id = models.AutoField(verbose_name='事件信息id', primary_key=True)
     event_time = models.DateTimeField(verbose_name='事件时间')
     province_choices = (
         (0, '北京'),
@@ -284,41 +320,7 @@ class event_statistics(models.Model):
         (34, '其他'),
     )
     province = models.SmallIntegerField(verbose_name='省份', choices=province_choices)
-    attitude_choices = (
-        # 0-4: 积极
-        (0, '高兴'),
-        (1, '搞笑'),
-        (2, '期待'),
-        (3, '肯定'),
-        (4, '感动'),
-        # 5-9: 消极
-        (5, '悲伤'),
-        (6, '愤怒'),
-        (7, '厌恶'),
-        (8, '担心'),
-        (9, '无聊'),
-        # 10-12: 中性
-        (10, '警惕'),
-        (11, '惊讶'),
-        (12, '无所谓'),
-    )
-    attitude = models.SmallIntegerField(verbose_name='心态', choices=attitude_choices)
     hot = models.IntegerField(verbose_name='热度')
-
-# 7.事件信息表
-class event_information(models.Model):
-    id = models.AutoField(verbose_name='事件信息id', primary_key=True)
-    time = models.CharField(verbose_name='时间', max_length=32)
-    place = models.CharField(verbose_name='地点', max_length=32)
-    trigger = models.CharField(verbose_name='触发器', max_length=32)
-    people = models.CharField(verbose_name='人物', max_length=32)
-    things = models.CharField(verbose_name='事情', max_length=32)
-    moves = models.CharField(verbose_name='动作', max_length=32)
-    events = models.CharField(verbose_name='事件', max_length=32)
-    institution = models.CharField(verbose_name='机构', max_length=32)
-    numbers = models.CharField(verbose_name='数量', max_length=32)
-    unit = models.CharField(verbose_name='单元', max_length=32)
-    reason = models.CharField(verbose_name='原因', max_length=32)
     event_id = models.ForeignKey('event_statistics',on_delete=models.CASCADE, db_column='event_id')
 
 # 8.事件关键词表

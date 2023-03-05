@@ -304,7 +304,7 @@ export default {
 
       .type{
         //float: right;
-        margin-left: 450px;
+        margin-left: 440px;
         padding: 10px;
         background: radial-gradient(ellipse 20px 8px at 50%, #c5e0b4b7, #fff0);
       }

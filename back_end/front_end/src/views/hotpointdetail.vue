@@ -101,7 +101,6 @@ export default {
           this.flag_map=true;
           if(this.flag_pie_column&&this.flag_word_cloud){
             this.ShowPage = true;
-            console.log("2222")
           }
         })
         .catch((error) => {

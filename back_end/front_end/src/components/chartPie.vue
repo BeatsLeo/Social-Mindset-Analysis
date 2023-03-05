@@ -11,6 +11,7 @@ export default {
   },
 	data() {
     this.attitude_count=JSON.parse(JSON.stringify(this.attitude_count))
+    console.log("chartpie:", this.attitude_count)
 		return {
 			option: {
         tooltip:{
