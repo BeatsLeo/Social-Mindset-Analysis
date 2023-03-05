@@ -7,10 +7,10 @@ import echarts from 'echarts';
 
 export default {
   props: {
-    hot_count: Object,
+    hot_count: Array,
   },
 	data() {
-    this.hot_count=JSON.parse(JSON.stringify(this.hot_count))
+    // this.hot_count=JSON.parse(JSON.stringify(this.hot_count))
     var data=JSON.parse(JSON.stringify(Object.values(this.hot_count)))
     data=Object.values(data)
     var province=[]

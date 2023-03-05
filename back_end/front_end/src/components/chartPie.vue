@@ -7,10 +7,10 @@ import echarts from 'echarts';
 
 export default {
   props: {
-    attitude_count: Object,
+    attitude_count: Array,
   },
 	data() {
-    this.attitude_count=JSON.parse(JSON.stringify(this.attitude_count))
+    // this.attitude_count=JSON.parse(JSON.stringify(this.attitude_count))
     console.log("chartpie:", this.attitude_count)
 		return {
 			option: {

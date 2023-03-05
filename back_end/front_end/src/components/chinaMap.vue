@@ -14,14 +14,7 @@ export default {
     attitude_color: Array,
   },
 	data() {
-      this.attitude_color=JSON.parse(JSON.stringify(this.attitude_color))
       return {
-			// titledata: [],
-			// resultdata0: [],
-			// bartop6: [],
-
-			yMax: 1000,
-			// dataShadow: [],
 			option: {
 				title: [
 					{
