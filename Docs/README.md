@@ -37,11 +37,11 @@
 >     * [x] `doccano`标注
 >     * [x] ```json
 >       //域名: http://www.beatsleo.com:8000/
->           
+>               
 >       // 管理员账号
 >       '用户名': isps
 >       '密码': isps
->           
+>               
 >       // 个人账号
 >       '用户名': 姓名
 >       '密码': isps1234
@@ -69,8 +69,8 @@
 >
 > * [ ] 将模型结合并使用（预计1周）
 >
->   * [ ] 在预测过程中统计位置、时间信息，并存入数据库
->   * [ ] 关键词频率统计，以供词云展示
+>   * [x] 在预测过程中统计位置、时间信息，并存入数据库
+>   * [x] 关键词频率统计，以供词云展示
 >
 > * [ ] 人机交互部分与指导建议生成模型（预计开学后1-2周）
 >
@@ -130,14 +130,13 @@
 >
 >   * [ ] 暂存本地
 >
-> * [ ] Bilibili平台的爬取与数据清洗（预计1周）
+> * [x] Bilibili平台的爬取与数据清洗（预计1周）
 >
->   * [ ] 以dict的形式存储数据
->   * [ ] 
->
-> * [ ] 连接数据库，设置定时器，实现对三个平台的定时并行爬取（预计1周）
->
->   * [ ] 并行爬取的实现
+>   * [x] 以dict的形式存储数据
+>   
+>* [ ] 连接数据库，设置定时器，实现对三个平台的定时并行爬取（预计1周）
+> 
+>  * [ ] 并行爬取的实现
 >   * [ ] 大概每1或2小时爬一次
 >   * [ ] 将保存部分从本地改为存储在服务器数据库中，具体格式见周云弈部分。
 
@@ -252,18 +251,18 @@
 >
 >       ---
 >
->     * [x] 评论统计表：<u>comments_id</u>(自动增长INT), event_id(INT), content(CHAR(255)), comment_time(DATE), province(Smallint)[0-34], thumbs(INT), attitude(Smallint)[0-12]
+>     * [x] 评论统计表：<u>comments_id</u>(自动增长INT), comment_time(DATE), content(CHAR(255)), province(Smallint)[0-34], attitude(Smallint)[0-12], thumbs(INT), event_id(INT)
 >
->     * [x] 事件统计表：<u>event_id</u>(自动增长INT), post(CHAR(512)), summary(CHAR(255)), event_time(DATE), province(Smallint)[0-34], hot(INT), attitude(Smallint)[0-12]
+>     * [x] 事件统计表：<u>event_id</u>(自动增长INT), post(CHAR(512)), summary(CHAR(255)), total_attitude(Smallint)[0-12], events(CHAR(32)), institution(CHAR(32)), moves(CHAR(32)), numbers(CHAR(32)), people(CHAR(32)), place(CHAR(32)), reason(CHAR(32)), things(CHAR(32)), time(CHAR(32)), trigger(CHAR(32)), unit(CHAR(32))
 >
->     * [ ] 事件信息表：<u>id</u>(自动增长INT), event_id(INT), time(CHAR(32)), place(CHAR(32)), trigger(CHAR(32)), people(CHAR(32)), things(CHAR(32)), moves(CHAR(32)), events(CHAR(32)), institution(CHAR(32)), numbers(CHAR(32)), unit(CHAR(32)), reason(CHAR(32))
->     
->       评论关键词表：<u>id</u>(自动增长INT), event_id(INT), time(DATE), word(CHAR(32)), numbers(INT64), attitude(Smallint)[0-12]
->     
->       事件关键词表：<u>id</u>(自动增长INT), event_id(INT), time(DATE), word(CHAR(32)), numbers(INT64)
->     
+>     * [x] 事件分布表：<u>id</u>(自动增长INT), event_time(DATE), province(Smallint)[0-34], hot(INT), event_id(INT)
+>
+>     * [x] 评论关键词表：<u>id</u>(自动增长INT), event_id(INT), time(DATE), word(CHAR(32)), numbers(INT64), attitude(Smallint)[0-12]
+>
+>     * [x] 事件关键词表：<u>id</u>(自动增长INT), time(DATE), word(CHAR(32)), numbers(INTw64)
+>
 >   * [ ] 项目网站的登录、验证设置
->   
+>
 > * [x] 项目网站的其它跳转与页面命名（预计2周）
 >
 >   ```python
@@ -282,8 +281,8 @@
 >   * [ ] 将李帅部分的模型加入，共同测试功能
 >
 > * [ ] 所有功能整合（预计1周）
->   * [ ] 以Ajax形式定时更新需要数据库内容，更新上述全局变量
->     * [ ] 热度计算公式：$2 \times comments + com\_thumbs + event\_thumbs$
+>   * [x] 以Ajax形式定时更新需要数据库内容，更新上述全局变量
+>     * [x] 热度计算公式：$2 \times comments + com\_thumbs + event\_thumbs$
 >   * [ ] 待补充
 
 
@@ -300,11 +299,11 @@
 >   * [x] 按给出风格和排版做好前端页面代码编写
 >   * [ ] 不推荐px, 推荐rem
 > * [ ] 根据周芳妍给出设计完成热点事件的前端代码（预计1周）
->   * [ ] 要求同上，并参照周芳妍部分
+>   * [x] 要求同上，并参照周芳妍部分
 > * [ ] 根据周芳妍给出设计完成心态分析的前端代码（预计1周）
->   * [ ] 要求同上，并参照周芳妍部分
+>   * [x] 要求同上，并参照周芳妍部分
 > * [ ] 根据周芳妍给出设计完成心态调整建议库的前端代码（预计1周）
->   * [ ] 要求同上，并参照周芳妍部分
+>   * [x] 要求同上，并参照周芳妍部分
 
 
 
@@ -414,3 +413,4 @@ NAME_TABLE = {
     '开/尾': 12,
 }
 ```
+
