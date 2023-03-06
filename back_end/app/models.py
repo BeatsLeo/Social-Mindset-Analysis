@@ -277,8 +277,7 @@ class event_statistics(models.Model):
     total_attitudes = models.SmallIntegerField(verbose_name='心态', choices=attitude_choices)
 
 
-# 7.事件分布
-# 表
+# 7.事件分布表
 class event_distribution(models.Model):
     id = models.AutoField(verbose_name='事件信息id', primary_key=True)
     event_time = models.DateTimeField(verbose_name='事件时间')
@@ -329,7 +328,6 @@ class event_key_words(models.Model):
     time = models.DateTimeField(verbose_name='事件时间')
     word=models.CharField(verbose_name='关键词',max_length=32)
     numbers=models.IntegerField(verbose_name="重复次数")
-    event_id = models.ForeignKey('event_statistics', on_delete=models.CASCADE, db_column='event_id')
 
 # 9.评论关键词表
 class comments_key_words(models.Model):
