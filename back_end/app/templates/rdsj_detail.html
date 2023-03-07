@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>热点事件详情</title>
+
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/echarts.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/echarts-wordcloud.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/map/js/china.js' %}"></script>
+</head>
+<body>
+    {#--页面跳转--#}
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+                <ul class="nav navbar-nav">
+                    <li><a href="/index/event_list/">首页</a></li>
+                    <li><a href="/rdsj/event_list/">热点事件</a></li>
+                    <li><a href="/xtfx/comment_list/">心态分析</a></li>
+                    <li><a href="/xttz/">心态调整建议生成</a></li>
+                </ul>
+
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    {#1.事件详情#}
+    <label>事件详情</label>
+    <div>{{ queryset.event_id.post }}</div>
+    {#2.心态分布图#}
+    <div id="map" style="width: 400px;height: 300px"></div>
+    {#3.心态变化时间图#}
+    <div id="pie" style="width: 400px;height: 300px"></div>
+    {#4.热点地区变化时间图#}
+    <div id="column" style="width: 400px;height: 300px"></div>
+    {#5.评论词云图#}
+    <div id="wordcloud" style="width: 400px;height: 300px"></div>
+</body>
+</html>
+
+<script type="text/javascript" src="{% static 'js/attitude_map.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/attitude_pie.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/attitude_column_attitude.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/attitude_wordcloud.js' %}"></script>
+<script>
+    var mapOption;
+    var pieOption;
+    var columnOption;
+    var wordcloudOption;
+
+    {#1.心态分布图#}
+    $.ajax({
+        url:'/rdsj/attitude_map/',
+        type:'get',
+        data:{},
+        success:function (data) {
+            mapOption =create_attitude_map(data)
+            console.log(mapOption)
+            if (document.readyState === "complete") {
+                var MapEchart = echarts.init(document.getElementById('map'));
+                MapEchart.setOption(mapOption);
+            }
+        }
+    })
+
+    {#2.心态变化时间图（饼图&柱形图）&评论词云图#}
+    $.ajax({
+        url:'/rdsj/attitude_pie_column/',
+        type:'get',
+        //$("#add1").val() 取到id为add1这个控件的value值
+        data:{},
+        success:function (data) {
+            console.log(data)
+            pieOption =create_attitude_pie(data)
+            columnOption =create_attitude_column(data)
+            if (document.readyState === "complete") {
+                var PieEchart = echarts.init(document.getElementById('pie'));
+                PieEchart.setOption(pieOption);
+                var ColumnEchart = echarts.init(document.getElementById('column'));
+                ColumnEchart.setOption(columnOption);
+                wordcloudOption =create_attitude_wordcloud()
+                console.log(wordcloudOption)
+                var WordCloudEchart = echarts.init(document.getElementById('wordcloud'));
+                WordCloudEchart.setOption(wordcloudOption);
+            }
+        }
+    })
+</script>

@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>热点事件</title>
+
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/echarts.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/echarts-wordcloud.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/map/js/china.js' %}"></script>
+</head>
+<body>
+<div>
+    {#--页面跳转--#}
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+                <ul class="nav navbar-nav">
+                    <li><a href="/index/event_list/">首页</a></li>
+                    <li><a href="/rdsj/event_list/">热点事件</a></li>
+                    <li><a href="/xtfx/comment_list/">心态分析</a></li>
+                    <li><a href="/xttz/">心态调整建议生成</a></li>
+                </ul>
+
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    {#1.筛选（地区）#}
+    <form method="get">
+        <div class="form-group">
+                <label class="col-sm-2 control-label">地区</label>
+                <div class="col-sm-4">
+                    {% for p in province_map.keys %}
+                        <label class="checkbox-inline">
+                            <input value="{{ p }}" type="checkbox" name="provinces"/>{{ p }}
+                        </label>
+                    {% endfor %}
+                </div>
+        </div>
+        <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true">确定</span>
+                </button>
+        </span>
+    </form>
+    {#2.筛选（心态）#}
+    <form method="get">
+        <div class="form-group">
+                <label class="col-sm-2 control-label">心态</label>
+                <div class="col-sm-4">
+                    {% for a in attitude_map.keys %}
+                        <label class="checkbox-inline">
+                            <input value="{{ a }}" type="checkbox" name="attitudes"/>{{ a }}
+                        </label>
+                    {% endfor %}
+                </div>
+        </div>
+        <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true">确定</span>
+                </button>
+        </span>
+    </form>
+    {#3.筛选（时间）#}
+    <form method="get">
+        <div class="input-group">
+                <label class="col-sm-2 control-label">开始时间</label>
+                年：<input value="{{ begin_year }}" type="text" name="begin_year"/>
+                月：<input value="{{ begin_month }}" type="text" name="begin_month"/>
+                日：<input value="{{ begin_day }}" type="text" name="begin_day"/>
+        </div>
+        <div class="input-group">
+                <label class="col-sm-2 control-label">结束时间</label>
+                年：<input value="{{ to_year }}" type="text" name="to_year"/>
+                月：<input value="{{ to_month }}" type="text" name="to_month"/>
+                日：<input value="{{ to_day }}" type="text" name="to_day"/>
+        </div><span style="color: red">{{ error_msg }}</span>
+        <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true">确定</span>
+                </button>
+        </span>
+    </form>
+    {#4.筛选（搜索框）#}
+    <form method="get">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="请输入热点事件、心态、地区等" value="{{ search_data}}">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true">点击搜索</span>
+                </button>
+            </span>
+        </div>
+    </form>
+
+    {#5.热点事件列表#}
+    <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>event</th>
+            <th>hot</th>
+            <th>attitude</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for obj in queryset %}
+          <tr>
+            <th><a href="/rdsj/{{ obj.event_id.event_id }}/event_detail/">{{ obj.event_id.event }}</a></th>
+            <td>{{ event_hot|get_item:obj.event_id.event_id }}</td>
+            <td>{{ obj.get_attitude_display }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+    {#6.心态分布图#}
+    <div id="map" style="width: 400px;height: 300px"></div>
+    {#7.热点地区变化时间图#}
+    <div id="column" style="width: 400px;height: 300px"></div>
+    {#8.高频词云图#}
+    <div id="wordcloud" style="width: 400px;height: 300px"></div>
+</div>
+</body>
+</html>
+
+<script type="text/javascript" src="{% static 'js/attitude_map.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/attitude_pie.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/attitude_column_hot.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/attitude_wordcloud.js' %}"></script>
+<script>
+    var mapOption;
+    var columnOption;
+    var wordcloudOption;
+
+    {#1.心态分布图#}
+    $.ajax({
+        url:'/index/attitude_map/',
+        type:'get',
+        data:{},
+        success:function (data) {
+            mapOption =create_attitude_map(data)
+            console.log(mapOption)
+            if (document.readyState === "complete") {
+                var MapEchart = echarts.init(document.getElementById('map'));
+                MapEchart.setOption(mapOption);
+            }
+        }
+    })
+
+    {#2.热点地区变化时间图&高频词云图#}
+    $.ajax({
+        url:'/index/attitude_column/',
+        type:'get',
+        //$("#add1").val() 取到id为add1这个控件的value值
+        data:{},
+        success:function (data) {
+            console.log(data)
+            columnOption =create_attitude_column(data)
+            if (document.readyState === "complete") {
+                var ColumnEchart = echarts.init(document.getElementById('column'));
+                ColumnEchart.setOption(columnOption);
+                wordcloudOption =create_attitude_wordcloud()
+                console.log(wordcloudOption)
+                var WordCloudEchart = echarts.init(document.getElementById('wordcloud'));
+                WordCloudEchart.setOption(wordcloudOption);
+            }
+        }
+    })
+</script>
