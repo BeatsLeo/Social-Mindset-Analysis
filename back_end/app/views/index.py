@@ -6,6 +6,7 @@ from django.views.decorators.http import require_http_methods
 from django.db.models import Sum
 import operator
 
+
 COLOR = {'0': {'color': '#FFF2CC', 'rgb': (255, 242, 204)},
          '1': {'color': '#FFE699', 'rgb': (255, 230, 153)},
          '2': {'color': '#FFD966', 'rgb': (255, 217, 102)},
@@ -128,15 +129,21 @@ def event_list(request):
                 con.children.append(('total_attitudes', attitude))
 
     try:
+        hot_list= {}
         queryset = models.event_statistics.objects.filter(con)
+        hot=models.event_distribution.objects.values('event_id__event_id').annotate(number=Sum("hot")).order_by()
+        for h in hot:
+            hot_list[str(h['event_id__event_id'])]=h['number']
+        print(hot_list)
+        # print(hot.get('number') )
         # models.event_statistics.objects.filter(event_distribution__province=)
         response['event_list']=[]
         for object in queryset:
             temp={}
             temp['id'] = object.event_id
             temp['name']=object.summary
-            print("sum:",models.event_distribution.objects.filter(event_id__event_id=temp['id']).aggregate(nums=Sum('hot'))['nums'])
-            temp['num']=models.event_distribution.objects.filter(event_id__event_id=temp['id']).aggregate(nums=Sum('hot'))['nums']
+            temp['num']=hot_list[str(temp['id'])]
+            # temp['num']=models.event_distribution.objects.filter(event_id__event_id=temp['id']).aggregate(nums=Sum('hot'))['nums']
             temp['type']=object.get_total_attitudes_display()
             temp['content'] = object.post
             response['event_list'].append(temp)

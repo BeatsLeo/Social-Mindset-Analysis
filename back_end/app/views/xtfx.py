@@ -46,14 +46,20 @@ def comments_detail(request):
     con.add(P,'AND')
     # 根据搜索条件去数据库获取
     try:
+        hot_list = {}
         queryset = models.event_statistics.objects.filter(con).distinct()
+        hot = models.event_distribution.objects.values('event_id__event_id').annotate(number=Sum("hot")).order_by()
+        for h in hot:
+            hot_list[str(h['event_id__event_id'])] = h['number']
+        print(hot_list)
         response['event_list'] = []
         response['province_map'] = []
         for object in queryset:
             temp = {}
             temp['id'] = object.event_id
             temp['name'] = object.summary
-            temp['num'] = models.event_distribution.objects.filter(event_id__event_id=temp['id']).aggregate(nums=Sum('hot'))['nums']
+            temp['num'] = hot_list[str(temp['id'])]
+            # temp['num'] = models.event_distribution.objects.filter(event_id__event_id=temp['id']).aggregate(nums=Sum('hot'))['nums']
             temp['type'] = object.get_total_attitudes_display()
             temp['content'] = object.post
             response['event_list'].append(temp)

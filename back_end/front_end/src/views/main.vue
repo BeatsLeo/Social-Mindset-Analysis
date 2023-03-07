@@ -74,6 +74,7 @@ export default {
       })
         .then((data) => {
           if (data['respCode'] === '000000') {
+            console.log('event_list:',data['event_list'])
             this.hotList = data['event_list']
           } else {
             this.$message.error('获取信息失败')
