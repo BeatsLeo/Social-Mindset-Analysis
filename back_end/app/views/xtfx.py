@@ -2,13 +2,14 @@ from django.http import JsonResponse
 from app import models
 from django.db.models import Q, Sum
 from django.views.decorators.http import require_http_methods
+import pandas as pd
 
 # 评论词云
 def comment_cloud(request):
     worddata= []
 
     attitudeId = request.GET.get('id', "")  # 获取查询参数
-    queryset=models.comments_key_words.objects.filter(attitude=attitudeId).values('word', 'numbers')
+    queryset=models.comments_key_words.objects.filter(attitude=attitudeId).values('word', 'numbers').order_by('numbers')[:30]
     for object in queryset:
         worddata.append({'value': object['numbers'], 'name': object['word']})
 
@@ -46,23 +47,16 @@ def comments_detail(request):
     con.add(P,'AND')
     # 根据搜索条件去数据库获取
     try:
-        hot_list = {}
-        queryset = models.event_statistics.objects.filter(con).distinct()
+        queryset = models.event_statistics.objects.filter(con).distinct()[:9]
+        querysetList = pd.DataFrame(list(queryset.values()))
         hot = models.event_distribution.objects.values('event_id__event_id').annotate(number=Sum("hot")).order_by()
-        for h in hot:
-            hot_list[str(h['event_id__event_id'])] = h['number']
-        print(hot_list)
-        response['event_list'] = []
+        hotList = pd.DataFrame(list(hot))
+        hotList = hotList.rename(columns={'event_id__event_id': 'event_id'})
+        out = querysetList.merge(hotList)
+        out = out.rename(columns={'event_id': 'id', 'summary': "name", 'total_attitudes': 'type', 'post': 'content'})
+        out = out.to_dict(orient='records')
+        response['event_list'] = out
         response['province_map'] = []
-        for object in queryset:
-            temp = {}
-            temp['id'] = object.event_id
-            temp['name'] = object.summary
-            temp['num'] = hot_list[str(temp['id'])]
-            # temp['num'] = models.event_distribution.objects.filter(event_id__event_id=temp['id']).aggregate(nums=Sum('hot'))['nums']
-            temp['type'] = object.get_total_attitudes_display()
-            temp['content'] = object.post
-            response['event_list'].append(temp)
         response['respMsg'] = 'success'
         response['respCode'] = '000000'
         for k, v in province_map.items():

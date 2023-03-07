@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.db.models import Sum
 import operator
+import pandas as pd
 
 
 COLOR = {'0': {'color': '#FFF2CC', 'rgb': (255, 242, 204)},
@@ -92,10 +93,10 @@ def attitude_column(request):
 def event_cloud(request):
     worddata= []
 
-    queryset=models.event_key_words.objects.values('word','numbers').all()
+    queryset=models.event_key_words.objects.values('word','numbers').all().order_by('numbers')[:15]
     for object in queryset:
         worddata.append({'value':object['numbers'],'name':object['word']})
-    queryset=models.comments_key_words.objects.values('word', 'numbers').all()
+    queryset=models.comments_key_words.objects.values('word', 'numbers').all().order_by('numbers')[:15]
     for object in queryset:
         worddata.append({'value': object['numbers'], 'name': object['word']})
 
@@ -129,25 +130,16 @@ def event_list(request):
                 con.children.append(('total_attitudes', attitude))
 
     try:
-        hot_list= {}
-        queryset = models.event_statistics.objects.filter(con)
-        hot=models.event_distribution.objects.values('event_id__event_id').annotate(number=Sum("hot")).order_by()
-        for h in hot:
-            hot_list[str(h['event_id__event_id'])]=h['number']
-        print(hot_list)
-        # print(hot.get('number') )
-        # models.event_statistics.objects.filter(event_distribution__province=)
-        response['event_list']=[]
-        for object in queryset:
-            temp={}
-            temp['id'] = object.event_id
-            temp['name']=object.summary
-            temp['num']=hot_list[str(temp['id'])]
-            # temp['num']=models.event_distribution.objects.filter(event_id__event_id=temp['id']).aggregate(nums=Sum('hot'))['nums']
-            temp['type']=object.get_total_attitudes_display()
-            temp['content'] = object.post
-            response['event_list'].append(temp)
-            print(response['event_list'])
+        queryset = models.event_statistics.objects.filter(con)[:9]
+        querysetList=pd.DataFrame(list(queryset.values()))
+        hot=models.event_distribution.objects.values('event_id__event_id').annotate(num=Sum("hot")).order_by()
+        hotList=pd.DataFrame(list(hot))
+        hotList=hotList.rename(columns={'event_id__event_id':'event_id'})
+        out=querysetList.merge(hotList)
+        out=out.rename(columns={'event_id':'id','summary':"name",'total_attitudes':'type','post':'content'})
+        out=out.to_dict(orient='records')
+        response['event_list']=out
+        # print(response['event_list'])
         response['respMsg'] = 'success'
         response['respCode'] = '000000'
     except Exception as e:

@@ -4,7 +4,7 @@ import numpy as np
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.db.models import Sum
-
+import pandas as pd
 
 COLOR = {'0': {'color': '#FFF2CC', 'rgb': (255, 242, 204)},
          '1': {'color': '#FFE699', 'rgb': (255, 230, 153)},
@@ -73,7 +73,7 @@ def comment_cloud(request):
     worddata= []
 
     eventId = request.GET.get('id', "")  # 获取查询参数
-    queryset=models.comments_key_words.objects.filter(event_id__event_id=eventId).values('word', 'numbers')
+    queryset=models.comments_key_words.objects.filter(event_id__event_id=eventId).values('word', 'numbers').order_by('numbers')[:30]
     for object in queryset:
         worddata.append({'value': object['numbers'], 'name': object['word']})
 
@@ -136,24 +136,17 @@ def event_list(request):
     print(s)
     # 根据搜索条件去数据库获取
     try:
-        hot_list = {}
-        queryset = models.event_statistics.objects.filter(s).distinct()
+        queryset = models.event_statistics.objects.filter(s).distinct()[:9]
+        querysetList = pd.DataFrame(list(queryset.values()))
         hot = models.event_distribution.objects.values('event_id__event_id').annotate(number=Sum("hot")).order_by()
-        for h in hot:
-            hot_list[str(h['event_id__event_id'])] = h['number']
-        print(hot_list)
-        response['event_list'] = []
+        hotList = pd.DataFrame(list(hot))
+        hotList = hotList.rename(columns={'event_id__event_id': 'event_id'})
+        out = querysetList.merge(hotList)
+        out = out.rename(columns={'event_id': 'id', 'summary': "name", 'total_attitudes': 'type', 'post': 'content'})
+        out = out.to_dict(orient='records')
+        response['event_list'] = out
         response['province_map'] = []
         response['attitude_map'] = []
-        for object in queryset:
-            temp = {}
-            temp['id'] = object.event_id
-            temp['name'] = object.summary
-            temp['num'] = hot_list[str(temp['id'])]
-            # temp['num'] = models.event_distribution.objects.filter(event_id__event_id=temp['id']).aggregate(nums=Sum('hot'))['nums']
-            temp['type'] = object.get_total_attitudes_display()
-            temp['content'] = object.post
-            response['event_list'].append(temp)
         response['respMsg'] = 'success'
         response['respCode'] = '000000'
         for k,v in province_map.items():
