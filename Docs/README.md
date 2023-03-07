@@ -37,11 +37,11 @@
 >     * [x] `doccano`标注
 >     * [x] ```json
 >       //域名: http://www.beatsleo.com:8000/
->               
+>                 
 >       // 管理员账号
 >       '用户名': isps
 >       '密码': isps
->               
+>                 
 >       // 个人账号
 >       '用户名': 姓名
 >       '密码': isps1234
@@ -164,22 +164,22 @@
 >    * [ ] 项目介绍文案（先空出来或随便给点无关的话占着位置）
 >
 >    * [x] 导航栏（首页、热点事件、社会心态分析、心态调整建议库），含登录头像，类似于下图（放在整个网站所有网页的顶部）：
->
->
->    ![image-20230108205107288](./images/导航栏.png)
->
+>   
+>   
+>       ![image-20230108205107288](./images/导航栏.png)
+>   
 >    * [x] 搜索框
->
+>   
 >    * [x] 部分热点事件展示
->
+>   
 >    * [x] 中国心态热力分布图（随时间变化）
->
+>   
 >    * [x] 高频词云图
->
+>   
 >    * [x] 心态变化时间图（饼图或柱状图）
->
+>   
 >    * [x] 热点地区变化时间图
->
+>   
 >* [x] 热点事件页面设计（预计1周）
 >
 >    * [x] 热点事件列表（支持点击展开、筛选）
@@ -207,7 +207,6 @@
 >
 >    * [x] 针对十三种心态均设置进入窗口
 >        * [x] 点击进入建议生成，输入事件 + 心态，输出建议
->
 >
 
 
@@ -257,9 +256,9 @@
 >
 >     * [x] 事件分布表：<u>id</u>(自动增长INT), event_time(DATE), province(Smallint)[0-34], hot(INT), event_id(INT)
 >
->     * [x] 评论关键词表：<u>id</u>(自动增长INT), event_id(INT), time(DATE), word(CHAR(32)), numbers(INT64), attitude(Smallint)[0-12]
+>     * [x] 评论关键词表：<u>id</u>(自动增长INT), time(DATE), word(CHAR(32)), numbers(INT64), attitude(Smallint)[0-12], event_id(INT)
 >
->     * [x] 事件关键词表：<u>id</u>(自动增长INT), time(DATE), word(CHAR(32)), numbers(INTw64)
+>     * [x] 事件关键词表：<u>id</u>(自动增长INT), time(DATE), word(CHAR(32)), numbers(INT64)
 >
 >   * [ ] 项目网站的登录、验证设置
 >
