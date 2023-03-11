@@ -24,8 +24,9 @@
         <el-row v-for="(item) in commentList" :key="item.id">
           <div class="itemClass">
             <div class="title">
-              <span>{{item.comment}}</span>
+              <el-col :span="16"><span>{{item.comment}}</span></el-col>
               <el-col :span="2">&nbsp;</el-col>
+              <el-col :span="4">
               <el-select v-model="change_mentality" multiple collapse-tags placeholder="心态" @change="change(item)" size="mini">
               <el-option-group
                 v-for="item in mentalityData"
@@ -39,6 +40,7 @@
                 </el-option>
               </el-option-group>
             </el-select>
+            </el-col>
             </div>
           </div>
         </el-row>
@@ -59,7 +61,7 @@
       <el-row>
         <h2><i class="el-icon-cloudy"></i>&nbsp;心态占比饼图</h2>
         <el-divider></el-divider>
-        <el-col :span="12">
+        <el-col :span="24">
             <div class="chartCategory">
               <chart-pie :attitude_count="chartPieData"></chart-pie>
             </div>

@@ -27,6 +27,8 @@ def attitude_map(request):
     attitude_color= []
 
     province_map = {v: k for k, v in models.comments_statistics.province_choices}
+    # count = models.comments_statistics.objects.values('province').annotate(nums=Sum('thumbs')).order_by()
+    # print(list(attitude_count))
 
     for p in province_map.values():
         r=0
@@ -34,6 +36,7 @@ def attitude_map(request):
         b=0
         count=0
         attitude_map=np.zeros(13)
+
 
         attitude_count=models.comments_statistics.objects.filter(province=p).values('attitude').annotate(nums=Sum('thumbs')).order_by()
         for q in attitude_count:

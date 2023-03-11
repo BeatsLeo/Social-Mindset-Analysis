@@ -24,7 +24,7 @@
               <span>{{item.name}}</span>
             </div>
             <div class="other">
-              <span class="num"><i class="el-icon-s-opportunity"></i>{{item.num}}</span>
+              <span class="num"><i class="iconfont icon-huoyan"></i>{{item.num}}</span>
               <span class="type">{{item.type}}</span>
             </div>
           </div>
@@ -46,6 +46,7 @@
 <script>
 import ajax from '../axios';
 import ChinaMap from '@/components/chinaMap.vue';
+import "../assets/icon/font/iconfont.css"
 
 export default {
   data () {

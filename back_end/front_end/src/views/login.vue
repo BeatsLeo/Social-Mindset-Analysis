@@ -1,7 +1,7 @@
 <template>
   <div class="loginView">
     <div class="login">
-        <h1>【网站名称】</h1>
+        <h1>开放域社会心态挖掘与引导系统</h1>
         <el-divider></el-divider>
         <el-input class="input" prefix-icon="el-icon-user" v-model="username" placeholder="账号"></el-input>
         <el-input class="input" prefix-icon="el-icon-lock" v-model="password" placeholder="密码" show-password></el-input>
@@ -9,13 +9,22 @@
           <el-col :span="12">
           <el-input prefix-icon="el-icon-key" v-model="code" placeholder="验证码"></el-input>
           </el-col>
-          <el-col :span="12">
+        <el-col :span="2">&nbsp;</el-col>
+          <el-col :span="10">
             <div @click="refreshCode()">
               <identify :identifyCode="identifyCode"></identify>
             </div>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col :span="12">
         <el-button class="loginButton" @click="login()" type="primary" round>点此登陆</el-button>
+          </el-col>
+          <el-col :span="2">&nbsp;</el-col>
+          <el-col :span="10">
+        <el-button class="loginButton" @click="register()" type="primary" round>点此注册</el-button>
+          </el-col>
+        </el-row>
     </div>
   </div>
 </template>
@@ -50,6 +59,13 @@ export default {
     refreshCode() {
       this.identifyCode = "";
       this.makeCode(this.identifyCodes,4);
+    },
+    register() {
+      this.$router.push({
+            path: '/register',
+            query: {
+            },
+          });
     },
     randomNum (min, max) {
       max = max + 1
@@ -109,7 +125,7 @@ export default {
 
 <style scoped>
 .loginView {
-  background:url("../assets/login.png");
+  background:url("../assets/login.gif");
   width:100%;
   height:100%;
   position:fixed;

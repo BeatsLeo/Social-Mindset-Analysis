@@ -34,7 +34,7 @@ export default {
               type: 'wordCloud',
               left: '0%',
               right: '0%',
-              top: '5%',                  // Y轴偏移量
+              top: '2%',                  // Y轴偏移量
               width: '100%',               // canvas宽度大小
               height: '100%',              // canvas高度大小
               sizeRange: [12, 40],         //  词典字体大小范围配置

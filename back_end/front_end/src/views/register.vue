@@ -1,13 +1,13 @@
 <template>
     <div class="registerView">
       <div class="register">
-          <h1>【网站名称】</h1>
+          <h1>注&nbsp;&nbsp;&nbsp;&nbsp;册</h1>
           <el-divider></el-divider>
           <el-input class="input" prefix-icon="el-icon-user" v-model="username" placeholder="账号"></el-input>
           <el-input class="input" prefix-icon="el-icon-lock" v-model="password" placeholder="密码" show-password></el-input>
           <el-input class="input" prefix-icon="el-icon-lock" v-model="passcheck" placeholder="确认密码" show-password></el-input>
           <el-divider></el-divider>
-          <h2>密码应包含，至少【】位</h2>
+          <h3>密码应包含，至少【】位</h3>
           <el-button class="registerButton" @click="register()" type="primary" round>点此注册</el-button>
       </div>
     </div>
@@ -78,7 +78,7 @@
 
   <style scoped>
   .registerView {
-    background:url("../assets/login.png");
+    background:url("../assets/login.gif");
     width:100%;
     height:100%;
     position:fixed;

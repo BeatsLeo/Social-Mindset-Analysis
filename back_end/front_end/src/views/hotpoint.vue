@@ -54,7 +54,7 @@
             <span>{{item.name}}</span>
           </div>
           <div class="other">
-            <span class="num"><i class="el-icon-s-opportunity"></i>{{item.num}}</span>
+            <span class="num"><i class="iconfont icon-huoyan"></i>{{item.num}}</span>
             <span class="type">{{item.type}}</span>
           </div>
         </div>
@@ -99,6 +99,7 @@ import wordCloud from '@/components/wordCloud.vue';
 import ChinaMap from '@/components/chinaMap.vue';
 import ChartCategory from '@/components/chartCategory_hot.vue';
 import mentalityData from "../testdata/mentalityData";
+import "../assets/icon/font/iconfont.css"
 
 export default {
   data () {

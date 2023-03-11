@@ -22,7 +22,7 @@ export default {
             // color: '#8E9CBD',
             type: "pie",  // 类型 饼图
             // radius: [50, 250], // 饼图的半径 `50, 250 => 内半径 外半径`
-            center: ["50%", "50%"], // 饼图的中心（圆心）坐标，数组的第一项是横坐标，第二项是纵坐标。
+            center: ["50%", "60%"], // 饼图的中心（圆心）坐标，数组的第一项是横坐标，第二项是纵坐标。
             // roseType: "area", // 是否展示成南丁格尔图，通过半径区分数据大小
             // 图形的颜色
             itemStyle: {
@@ -78,7 +78,7 @@ export default {
 
 <style lang="less" scoped>
 .chartPie {
-  width: 100%;
-  height: 100%;
+  width: 90%;
+  height: 90%;
 }
 </style>
