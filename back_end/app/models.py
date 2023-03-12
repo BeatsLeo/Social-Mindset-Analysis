@@ -147,6 +147,7 @@ class train(models.Model):
         (12, '无所谓'),
     )
     label = models.SmallIntegerField(verbose_name='心态标签', choices=label_choices)
+    correct=models.BooleanField(verbose_name='更正标签')
 
 
 # 4.待校正表
@@ -355,3 +356,12 @@ class comments_key_words(models.Model):
         (12, '无所谓'),
     )
     attitude = models.SmallIntegerField(verbose_name='心态', choices=attitude_choices)
+
+# 10.爬虫信息表
+class crawler_information(models.Model):
+    id = models.AutoField(verbose_name='爬虫信息id', primary_key=True)
+    time = models.DateTimeField(verbose_name='爬虫时间')
+    add=models.IntegerField(verbose_name="新增爬虫数量")
+    positive=models.IntegerField(verbose_name="积极")
+    neutral=models.IntegerField(verbose_name="中性")
+    negative=models.IntegerField(verbose_name="消极")
