@@ -30,7 +30,7 @@ class DebertaModel(torch.nn.Module):
             torch.nn.GELU(),
             torch.nn.LayerNorm(1024, eps=1e-07, elementwise_affine=True)
         )
-        self.decoder = torch.nn.Linear(1024, 13)
+        self.decoder = torch.nn.Linear(1024, 14)
         self.criterion = torch.nn.CrossEntropyLoss()
         
     def forward(self, input_ids, attention_mask=None, labels=None):
@@ -41,8 +41,8 @@ class DebertaModel(torch.nn.Module):
         out = self.decoder(out)
         
         select = attention_mask.reshape(-1) == 1
-        # [b, lens, 13] -> [b*lens, 13]
-        out = out.reshape(-1, 13)
+        # [b, lens, 14] -> [b*lens, 14]
+        out = out.reshape(-1, 14)
         out = out[select]
         rt['cls'] = out
                 

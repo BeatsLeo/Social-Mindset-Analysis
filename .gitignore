@@ -2,6 +2,7 @@
 **/.vscode
 **/.idea
 **/__pycache__
+**/LCSTS
 
 *.gz
 *.model
