@@ -37,11 +37,11 @@
 >     * [x] `doccano`标注
 >     * [x] ```json
 >       //域名: http://www.beatsleo.com:8000/
->                 
+>                     
 >       // 管理员账号
 >       '用户名': isps
 >       '密码': isps
->                 
+>                     
 >       // 个人账号
 >       '用户名': 姓名
 >       '密码': isps1234
@@ -244,9 +244,11 @@
 >
 >     * [x] 事件表：<u>event_id</u>(自动增长INT), event(CHAR(255)), post(CHAR(512)), time(DATE), province(Smallint)[0-34], thumbs(INT)
 >
->     * [x] 模型训练表：<u>train_id</u>(自动增长INT), comments_id(INT), label(Smallint)[0-12]
+>     * [x] 模型训练表：<u>train_id</u>(自动增长INT), comments_id(INT), label(Smallint)[0-12], correct(Smallint)[0-12]
 >
 >     * [x] 待校正表：<u>id</u>(自动增长INT), comments_id(INT), label(Smallint)[0-12]
+>
+>     * [ ] 爬虫信息表：<u>id</u>(自动增长INT), time(DATE), add(INT), positive(INT), neutral(INT), negative(INT)
 >
 >       ---
 >
@@ -259,9 +261,9 @@
 >     * [x] 评论关键词表：<u>id</u>(自动增长INT), time(DATE), word(CHAR(32)), numbers(INT64), attitude(Smallint)[0-12], event_id(INT)
 >
 >     * [x] 事件关键词表：<u>id</u>(自动增长INT), time(DATE), word(CHAR(32)), numbers(INT64)
->
+>     
 >   * [ ] 项目网站的登录、验证设置
->
+>   
 > * [x] 项目网站的其它跳转与页面命名（预计2周）
 >
 >   ```python
@@ -293,16 +295,24 @@
 > * [x] 学习前端技术（预计1周）
 >   * [x] 学习Django的前端模板
 >   * [x] 学习bootstrap框架（CSS） 、Vue框架（JS）
+>
 > * [x] 根据周芳妍给出设计完成登录界面和首页的前端代码（预计2周）
 >   * [x] 与周云弈协商，告诉后端需要什么数据
 >   * [x] 按给出风格和排版做好前端页面代码编写
 >   * [ ] 不推荐px, 推荐rem
+>
 > * [ ] 根据周芳妍给出设计完成热点事件的前端代码（预计1周）
 >   * [x] 要求同上，并参照周芳妍部分
+>
 > * [ ] 根据周芳妍给出设计完成心态分析的前端代码（预计1周）
 >   * [x] 要求同上，并参照周芳妍部分
+>
 > * [ ] 根据周芳妍给出设计完成心态调整建议库的前端代码（预计1周）
 >   * [x] 要求同上，并参照周芳妍部分
+>
+>     
+>
+> * [ ] 页面title名字更改
 
 
 
