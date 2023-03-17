@@ -4,6 +4,7 @@
 **/__pycache__
 **/LCSTS
 
+from_chatgpt.ipynb
 *.gz
 *.model
 *.json
