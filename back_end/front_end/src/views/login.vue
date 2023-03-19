@@ -1,7 +1,7 @@
 <template>
   <div class="loginView">
     <div class="login">
-        <h1>开放域社会心态挖掘与引导系统</h1>
+        <h1>【网站名称】</h1>
         <el-divider></el-divider>
         <el-input class="input" prefix-icon="el-icon-user" v-model="username" placeholder="账号"></el-input>
         <el-input class="input" prefix-icon="el-icon-lock" v-model="password" placeholder="密码" show-password></el-input>
@@ -9,22 +9,13 @@
           <el-col :span="12">
           <el-input prefix-icon="el-icon-key" v-model="code" placeholder="验证码"></el-input>
           </el-col>
-        <el-col :span="2">&nbsp;</el-col>
-          <el-col :span="10">
+          <el-col :span="12">
             <div @click="refreshCode()">
               <identify :identifyCode="identifyCode"></identify>
             </div>
           </el-col>
         </el-row>
-        <el-row>
-          <el-col :span="12">
         <el-button class="loginButton" @click="login()" type="primary" round>点此登陆</el-button>
-          </el-col>
-          <el-col :span="2">&nbsp;</el-col>
-          <el-col :span="10">
-        <el-button class="loginButton" @click="register()" type="primary" round>点此注册</el-button>
-          </el-col>
-        </el-row>
     </div>
   </div>
 </template>
@@ -51,21 +42,9 @@ export default {
     this.refreshCode();
   },
   methods: {
-    getCookie (name) {
-      var value = '; ' + document.cookie
-      var parts = value.split('; ' + name + '=')
-      if (parts.length === 2) return parts.pop().split(';').shift()
-    },
     refreshCode() {
       this.identifyCode = "";
       this.makeCode(this.identifyCodes,4);
-    },
-    register() {
-      this.$router.push({
-            path: '/register',
-            query: {
-            },
-          });
     },
     randomNum (min, max) {
       max = max + 1
@@ -85,12 +64,12 @@ export default {
       let md5Password = md5(this.password);
       this.$message.info('调用登陆: '+this.username+ '  '+ this.password + '  ' + md5Password);
       ajax({
-        url: 'http://127.0.0.1:8000/api/login/',
+        url: '/xx/login.json',
         method: 'post',
-        data: {
-          l_username: this.username,
-          l_password: this.password,
-        },
+        params: {
+          username: this.username,
+          password: md5Password
+        }
       })
         .then((data) => {
           if(data.flag === false){
@@ -125,7 +104,7 @@ export default {
 
 <style scoped>
 .loginView {
-  background:url("../assets/login.gif");
+  background:url("../assets/login.png");
   width:100%;
   height:100%;
   position:fixed;
@@ -134,7 +113,7 @@ export default {
   align-items: center;
   background-size:100% 100%;
   margin:0;
-  padding:0;
+  padding:0;  
   border:0;
 }
 .login {
@@ -142,11 +121,11 @@ export default {
   margin-right: 15%;
 }
 .input{
-  margin-bottom: 20px;
+  margin-bottom: 20px;  
 }
 .loginButton{
   width: 100%;
-  margin-top: 20px;
+  margin-top: 20px;  
 }
 
 h1, h2 {

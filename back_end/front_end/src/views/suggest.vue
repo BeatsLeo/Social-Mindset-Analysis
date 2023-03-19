@@ -17,12 +17,11 @@
       </el-row>
       <br>
       <el-row>
-        <h2><i class="el-icon-s-opportunity"></i>&nbsp;【心态】的针对性调整建议</h2>
+        <h2><i class="el-icon-s-opportunity"></i>&nbsp;【x心态】的针对性调整建议</h2>
         <el-divider></el-divider>
         <el-card class="box-card">
           <span>
-
-
+            {{suggestContent}}
           </span>
         </el-card>
       </el-row>
@@ -48,7 +47,7 @@
         <el-input placeholder="关键词检索..." v-model="m" class="input-with-select" size="mini"/>
       </el-row>
       <el-row>
-        <el-button class="handleButton" @click="handle()" type="primary" round>点击生成</el-button>
+        <el-button class="handleButton" @click="handle()" type="primary" round>点击生成</el-button>  
       </el-row>
       <el-row>
         <div class="h3div">
@@ -56,7 +55,7 @@
         </div>
         <el-card class="box-card">
           <span>
-
+            {{handleContent}}
           </span>
         </el-card>
       </el-row>
@@ -111,7 +110,7 @@ export default {
     },
     handle(){
       this.handleContent= this.e + "===="+this.m+ "======为贯彻落实我党“加快用互联网信息技术推进社会治理”的要求，本项目拟构建基于开放域事件提取的社会心态交互式挖掘与引导系统，挖掘社会心态的演化机制，摸清其事件原因。依托Erlangshen-Bert等预训练模型，本项目提出基于人在环路、开放域事件抽取与分析的技术框架，形成针对社会心态的智能监控、分析、归因和引导的一体化解决方案，为社会治理提供建议";
-
+    
       ajax({
         url: '/xx/handle.json',
         method: 'get',
@@ -172,7 +171,7 @@ export default {
   }
 
   .mentality{
-
+    
     .el-row{
       display: flex;
       justify-content: flex-start;
@@ -188,7 +187,7 @@ export default {
 
     .el-radio-button{
       margin-right: 2px;
-
+      
     }
     .el-radio-button__inner{
       border-radius: 0 0 0 0;
@@ -241,7 +240,7 @@ export default {
       }
     }
   }
-
+  
 
   .box-card{
     min-height: 200px;
@@ -327,7 +326,7 @@ export default {
     }
 
   }
-
+  
 
   .chartCategory{
     width: 100%;

@@ -4,30 +4,27 @@
       <h2><i class="el-icon-s-opportunity"></i>&nbsp;心态列表</h2>
       <el-divider></el-divider>
       <el-row class="mentality">
-        <el-radio-group v-model="mentality" size="small">
+        <el-radio-group v-model="mentality" size="small" @input="suggest()">
           <div v-for="(item, index) in mentalityData" :key="item.group">
-            <div class="itemClass">
             <el-row :class="['row'+(index+1)]">
               <span class="title">{{item.group}}</span>
-              <div  v-for="(i,j) in item.options" :key="i.id" @click="detail(i)">
+              <div  v-for="(i,j) in item.options" :key="i.id">
                 <el-radio-button :label="i.id" :class="['i'+(j+1)]">{{i.name}}</el-radio-button>
               </div>
             </el-row>
-            </div>
           </div>
         </el-radio-group>
       </el-row>
       <br>
       <el-row>
-        <h2><i class="el-icon-s-opportunity"></i>&nbsp;需要人工校正的列表</h2>
+        <h2><i class="el-icon-s-opportunity"></i>&nbsp;需要人工校正的事件</h2>
         <el-divider></el-divider>
-        <el-row v-for="(item) in commentList" :key="item.id">
-          <div class="itemClass">
+        <el-row v-for="(item) in hotList" :key="item.id">
+          <div class="itemClass" @click="detail(item)">
             <div class="title">
-              <el-col :span="16"><span>{{item.comment}}</span></el-col>
+              <span>{{item.name}}</span>
               <el-col :span="2">&nbsp;</el-col>
-              <el-col :span="4">
-              <el-select v-model="change_mentality" multiple collapse-tags placeholder="心态" @change="change(item)" size="mini">
+              <el-select v-model="query_mentality" multiple collapse-tags placeholder="心态" @change="search()" size="mini">
               <el-option-group
                 v-for="item in mentalityData"
                 :key="item.group"
@@ -40,7 +37,11 @@
                 </el-option>
               </el-option-group>
             </el-select>
-            </el-col>
+            </div>
+            <div class="other">
+              <span class="actor">{{item.actor}}</span>
+              <span class="num"><i class="el-icon-s-opportunity"></i>{{item.num}}</span>
+              <span class="type">{{item.type}}</span>
             </div>
           </div>
         </el-row>
@@ -48,22 +49,22 @@
     </el-col>
 
     <el-col :span="1">&nbsp;</el-col>
-    <el-col :span="11" v-if="ShowPage">
+    <el-col :span="11">
       <el-row>
         <h2><i class="el-icon-s-opportunity"></i>&nbsp;中国心态热力分布图</h2>
         <el-divider></el-divider>
-        <el-col :span="12" >
-          <div class="map" >
-            <china-map :attitude_color="mapData"></china-map>
+        <el-col :span="12">
+          <div class="map">
+            <china-map :citydata="mapData"></china-map>
           </div>
         </el-col>
       </el-row>
       <el-row>
         <h2><i class="el-icon-cloudy"></i>&nbsp;心态占比饼图</h2>
         <el-divider></el-divider>
-        <el-col :span="24" >
+        <el-col :span="12">
             <div class="chartCategory">
-              <chart-pie :attitude_count="chartPieData"></chart-pie>
+              <chart-pie :chartPieData="chartPieData"></chart-pie>
             </div>
           </el-col>
       </el-row>
@@ -75,10 +76,13 @@
 import ajax from '../axios';
 import wordCloud from '@/components/wordCloud.vue';
 import ChinaMap from '@/components/chinaMap.vue';
+import hotList from "../testdata/hotList";
+import wordData from "../testdata/wordData";
+import mapData from "../testdata/mapData";
 import dqData from "../testdata/dqData";
 import mentalityData from "../testdata/mentalityData";
 import ChartPie from '@/components/chartPie.vue';
-import qs from "qs";
+import chartPieData from "../testdata/chartPieData";
 
 export default {
   data () {
@@ -86,17 +90,14 @@ export default {
       mentality: "",
       e: "",
       m: "",
-      commentList:[],
-      mapData:[],
+      hotList,
+      wordData,
+      mapData,
       dqData,
-      ShowPage:false,
-      chartPieData:[],
+      chartPieData,
       mentalityData,
-      change_mentality:"",
       suggestContent:"",
-      handleContent:"",
-      flag_map:false,
-      flag_pie:false,
+      handleContent:""
 
     }
   },
@@ -106,61 +107,27 @@ export default {
     ChartPie,
   },
   mounted() {
-    this.init()
   },
   methods: {
-    init(){
+    suggest(){
       this.suggestContent = this.mentality+"====所谓引导建议，关键是引导建议需要如何写。 引导建议的发生，到底需要如何做到，不引导建议的发生，又会如何产生。 就我个人来说，引导建议对我的意义，不能不说非常重大。 而这些并不是完全重要，更加重要的问题是， 既然如此， 一般来讲，我们都必须务必慎重的考虑考虑。 伏尔泰在不经意间这样说过，不经巨大的困难，不会有伟大的事业。我希望诸位也能好好地体会这句话。 引导建议，发生了会如何，不发生又会如何。【放一点废话】";
       ajax({
-        url: 'http://127.0.0.1:8000/api/xtfx/comments_list/',
+        url: '/xx/suggest.json',
         method: 'get',
         params: {
+          mentality: this.mentality
         }
       })
         .then((data) => {
-           if (data['respCode'] === '000000') {
-            this.commentList = data['comments_list']
-          } else {
-            this.$message.error('获取信息失败')
+          if(data.flag === false){
+            this.$message.info('获取信息失败');
+            return;
           }
-        })
-        .catch((error) => {
-          this.$message.error('接口调用异常：'+error);
-        })
-        .finally(() => {
-        });
-      ajax({
-        url: 'http://127.0.0.1:8000/api/index/attitude_map/',
-        method: 'get',
-        params: {
-        }
-      })
-        .then((data) => {
-          console.log("attitude_map:",JSON.parse(JSON.stringify(data)))
-          this.mapData=JSON.parse(JSON.stringify(data));
-          this.flag_map=true;
-          if(this.flag_pie){
-            this.ShowPage = true;
-          }
-        })
-        .catch((error) => {
-          this.$message.error('接口调用异常：'+error);
-        })
-        .finally(() => {
-        });
-    ajax({
-        url: 'http://127.0.0.1:8000/api/index/attitude_pie/',
-        method: 'get',
-        params: {
-        }
-      })
-        .then((data) => {
-          console.log("attitude_pie:",JSON.parse(JSON.stringify(data)))
-          this.chartPieData=JSON.parse(JSON.stringify(data));
-          this.flag_pie=true;
-          if(this.flag_map){
-            this.ShowPage = true;
-          }
+          this.hotList = data.data.hotList;
+          this.mapData = data.data.mapData;
+          this.wordData = data.data.wordData;
+          this.chartPieData= data.data.chartPieData;
+          this.suggestContent = data.data;
         })
         .catch((error) => {
           this.$message.error('接口调用异常：'+error);
@@ -192,54 +159,12 @@ export default {
         .finally(() => {
         });
       },
-    change(item){
-      var da={}
-      da={
-         attitudes: this.change_mentality,
-         comments_id:item.id,
-      }
-      da=qs.stringify(da,{arrayFormat:'repeat'})
-      ajax({
-        url: 'http://127.0.0.1:8000/api/xtfx/comments_list/?'+da,
-        method: 'get',
-      })
-        .then((data) => {
-          if (data['respCode'] === '000000') {
-            ajax({
-        url: 'http://127.0.0.1:8000/api/xtfx/comments_list/',
-        method: 'get',
-        params: {
-        }
-      })
-        .then((data) => {
-           if (data['respCode'] === '000000') {
-            this.commentList = data['comments_list']
-          } else {
-            this.$message.error('获取信息失败')
-          }
-        })
-        .catch((error) => {
-          this.$message.error('接口调用异常：'+error);
-        })
-        .finally(() => {
-        });
-          } else {
-            this.$message.error('校正失败')
-          }
-        })
-        .catch((error) => {
-          this.$message.error('接口调用异常：'+error);
-        })
-        .finally(() => {
-          this.searchLoading = false;
-        });
-    },
-    detail(i){
-      console.log("i:",i.id);
+      detail(item){
+      console.info(item);
       this.$router.push({
         path: "/analysisdetail",
         query: {
-          id: i.id,
+          id: item.id,
           active: this.$route.query.active
         },
       },()=>{},()=>{});
@@ -283,7 +208,7 @@ export default {
   }
 
   .mentality{
-
+    
     .el-row{
       display: flex;
       justify-content: flex-start;
@@ -299,7 +224,7 @@ export default {
 
     .el-radio-button{
       margin-right: 2px;
-
+      
     }
     .el-radio-button__inner{
       border-radius: 0 0 0 0;
@@ -352,7 +277,7 @@ export default {
       }
     }
   }
-
+  
 
   .box-card{
     min-height: 200px;

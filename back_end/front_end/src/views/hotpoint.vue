@@ -54,7 +54,8 @@
             <span>{{item.name}}</span>
           </div>
           <div class="other">
-            <span class="num"><i class="iconfont icon-huoyan"></i>{{item.num}}</span>
+            <span class="actor">{{item.actor}}</span>
+            <span class="num"><i class="el-icon-s-opportunity"></i>{{item.num}}</span>
             <span class="type">{{item.type}}</span>
           </div>
         </div>
@@ -66,7 +67,7 @@
 
     <el-col :span="2">&nbsp;</el-col>
 
-    <el-col :span="11" v-if="ShowPage">
+    <el-col :span="11">
       <el-row>
         <h2><i class="el-icon-cloudy"></i>&nbsp;热点事件关键词云</h2>
         <el-divider></el-divider>
@@ -79,12 +80,12 @@
         <el-divider></el-divider>
         <el-col :span="12">
           <div class="map">
-            <china-map :attitude_color="mapData"></china-map>
+            <china-map :citydata="mapData"></china-map>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="chartCategory">
-            <chart-category :hot_count="chartCategoryData"></chart-category>
+            <chart-category :chartCategoryData="chartCategoryData"></chart-category>
           </div>
         </el-col>
       </el-row>
@@ -94,28 +95,27 @@
 
 <script>
 import ajax from '../axios';
-import qs from 'qs';
 import wordCloud from '@/components/wordCloud.vue';
 import ChinaMap from '@/components/chinaMap.vue';
-import ChartCategory from '@/components/chartCategory_hot.vue';
+import ChartCategory from '@/components/chartCategory.vue';
+import hotList from "../testdata/hotList";
+import wordData from "../testdata/wordData";
+import mapData from "../testdata/mapData";
+import chartCategoryData from "../testdata/chartCategoryData";
+import dqData from "../testdata/dqData";
 import mentalityData from "../testdata/mentalityData";
-import "../assets/icon/font/iconfont.css"
 
 export default {
   data () {
     return {
       searchLoading: false,
 
-      hotList:[],
-      wordData:[],
-      mapData:[],
-      chartCategoryData:[],
-      dqData:[],
+      hotList,
+      wordData,
+      mapData,
+      chartCategoryData,
+      dqData,
       mentalityData,
-      ShowPage:false,
-      flag_map:false,
-      flag_column:false,
-      flag_word_cloud:false,
 
       query_dq: "",
       query_mentality: "",
@@ -136,98 +136,33 @@ export default {
   methods: {
     search(){
       this.searchLoading = true;
-      if(this.query_date){
-        for(var i=0;i<=1;i++){
-          this.query_date[i] = this.dayjs(this.query_date[i]).format("YYYY-MM-DD")
-        }
-      }
-      var da={}
-      da={
-          dq:this.query_dq ,
+      ajax({
+        url: '/xx/hotpointlist.json',
+        method: 'get',
+        params: {
+          dq: this.query_dq,
           mentality: this.query_mentality,
           date: this.query_date,
           key: this.query_key,
           curPage: 0,
           pageSize: this.pageSize,
-      }
-      da=qs.stringify(da,{arrayFormat:'repeat'})
-      ajax({
-        url: 'http://127.0.0.1:8000/api/rdsj/event_list/?'+da,
-        method: 'get',
+        }
       })
         .then((data) => {
-          if (data['respCode'] === '000000') {
-            this.hotList = data['event_list']
-            this.dqData = data['province_map']
-          } else {
-            this.$message.error('获取信息失败')
+          if(data.flag === false){
+            this.$message.info('查询失败');
+            return;
           }
+          this.hotList = data.data.hotList;
+          this.mapData = data.data.mapData;
+          this.wordData = data.data.wordData;
+          this.chartCategoryData = data.data.chartCategoryData;
         })
         .catch((error) => {
           this.$message.error('接口调用异常：'+error);
         })
         .finally(() => {
           this.searchLoading = false;
-        });
-
-      ajax({
-        url: 'http://127.0.0.1:8000/api/index/attitude_map/',
-        method: 'get',
-        params: {
-        }
-      })
-        .then((data) => {
-          console.log("attitude_map:",JSON.parse(JSON.stringify(data)))
-          this.mapData=JSON.parse(JSON.stringify(data));
-          this.flag_map=true;
-          if(this.flag_column&&this.flag_word_cloud){
-            this.ShowPage = true;
-          }
-        })
-        .catch((error) => {
-          this.$message.error('接口调用异常：'+error);
-        })
-        .finally(() => {
-        });
-
-      ajax({
-        url: 'http://127.0.0.1:8000/api/index/attitude_column/',
-        method: 'get',
-        params: {
-        }
-      })
-        .then((data) => {
-          console.log("attitude_column:",JSON.parse(JSON.stringify(data)))
-          this.chartCategoryData=JSON.parse(JSON.stringify(data));
-          this.flag_column=true;
-          if(this.flag_map&&this.flag_word_cloud){
-            this.ShowPage = true;
-          }
-        })
-        .catch((error) => {
-          this.$message.error('接口调用异常：'+error);
-        })
-        .finally(() => {
-        });
-
-      ajax({
-        url: 'http://127.0.0.1:8000/api/index/event_cloud/',
-        method: 'get',
-        params: {
-        }
-      })
-        .then((data) => {
-          console.log("event_cloud:",JSON.parse(JSON.stringify(data)))
-          this.wordData=JSON.parse(JSON.stringify(data));
-          this.flag_word_cloud=true;
-          if(this.flag_map&&this.flag_column){
-            this.ShowPage = true;
-          }
-        })
-        .catch((error) => {
-          this.$message.error('接口调用异常：'+error);
-        })
-        .finally(() => {
         });
     },
     nextPage(){
@@ -241,7 +176,6 @@ export default {
         path: "/hotpointdetail",
         query: {
           id: item.id,
-          content:item.content,
           active: this.$route.query.active
         },
       },()=>{},()=>{});
@@ -254,7 +188,7 @@ export default {
 .hotpointView{
   width:100%;
   height:100%;
-
+  
   .listquery{
     margin-bottom: 10px;
     .el-input-group{
@@ -298,14 +232,17 @@ export default {
       font-weight: 600;
       display: none;
 
+      .actor{
+        padding: 10px;
+      }
 
       .num{
+        margin-left: 30px;
         padding: 10px;
       }
 
       .type{
-        //float: right;
-        margin-left: 440px;
+        margin-left: 60px;
         padding: 10px;
         background: radial-gradient(ellipse 20px 8px at 50%, #c5e0b4b7, #fff0);
       }

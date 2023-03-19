@@ -1,5 +1,5 @@
 <template>
-  <div class="hotpointdetailView" v-if="ShowPage">
+  <div class="hotpointdetailView">
     <el-col :span="11">
       <h2><i class="el-icon-s-opportunity"></i>&nbsp;事件详情</h2>
       <el-divider></el-divider>
@@ -32,19 +32,19 @@
           <h3>心态分布图</h3>
         </div>
         <el-row class="maprow">
-          <div class="map" >
-            <china-map :attitude_color="mapData"></china-map>
+          <div class="map">
+            <china-map :citydata="mapData"></china-map>
           </div>
         </el-row>
         <el-row>
           <el-col :span="12">
             <div class="chartCategory">
-              <chart-category :attitude_count="chartCategoryData"></chart-category>
+              <chart-category :chartCategoryData="chartCategoryData"></chart-category>
             </div>
           </el-col>
           <el-col :span="12">
-            <div class="chartPie" >
-              <chart-pie :attitude_count="chartPieData"></chart-pie>
+            <div class="chartCategory">
+              <chart-pie :chartPieData="chartPieData"></chart-pie>
             </div>
           </el-col>
         </el-row>
@@ -57,21 +57,21 @@
 import ajax from '../axios';
 import wordCloud from '@/components/wordCloud.vue';
 import ChinaMap from '@/components/chinaMap.vue';
-import ChartCategory from '@/components/chartCategory_attitude.vue';
+import ChartCategory from '@/components/chartCategory.vue';
 import ChartPie from '@/components/chartPie.vue';
+import wordData from "../testdata/wordData";
+import mapData from "../testdata/mapData";
+import chartCategoryData from "../testdata/chartCategoryData";
+import chartPieData from "../testdata/chartPieData";
 
 export default {
   data () {
     return {
       content: "",
-      wordData:[],
-      mapData:[],
-      chartCategoryData:[],
-      chartPieData:[],
-      ShowPage:false,
-      flag_map:false,
-      flag_pie_column:false,
-      flag_word_cloud:false,
+      wordData,
+      mapData,
+      chartCategoryData,
+      chartPieData,
     }
   },
   components: {
@@ -85,64 +85,25 @@ export default {
   },
   methods: {
     init(){
-      this.content = this.$route.query.content;
-      this.id=this.$route.query.id;
+      this.content = "国资委：积极推进“十四五”确定的重大煤电项目落地";
 
       ajax({
-        url: 'http://127.0.0.1:8000/api/rdsj/attitude_map/',
+        url: '/xx/detail.json',
         method: 'get',
         params: {
-          id:this.id,
+          id: this.$route.query.id
         }
       })
         .then((data) => {
-          console.log("attitude_map:",JSON.parse(JSON.stringify(data)))
-          this.mapData=JSON.parse(JSON.stringify(data));
-          this.flag_map=true;
-          if(this.flag_pie_column&&this.flag_word_cloud){
-            this.ShowPage = true;
+          if(data.flag === false){
+            this.$message.info('获取信息失败');
+            return;
           }
-        })
-        .catch((error) => {
-          this.$message.error('接口调用异常：'+error);
-        })
-        .finally(() => {
-        });
-      ajax({
-        url: 'http://127.0.0.1:8000/api/rdsj/attitude_pie_column/',
-        method: 'get',
-        params: {
-          id:this.id,
-        }
-      })
-        .then((data) => {
-          console.log("attitude_pie_column:",JSON.parse(JSON.stringify(data)))
-          this.chartPieData=JSON.parse(JSON.stringify(data));
-          this.chartCategoryData=JSON.parse(JSON.stringify(data));
-          this.flag_pie_column=true;
-          if(this.flag_map&&this.flag_word_cloud){
-            this.ShowPage = true;
-          }
-        })
-        .catch((error) => {
-          this.$message.error('接口调用异常：'+error);
-        })
-        .finally(() => {
-        });
-      ajax({
-        url: 'http://127.0.0.1:8000/api/rdsj/comment_cloud/',
-        method: 'get',
-        params: {
-          id:this.id,
-        }
-      })
-        .then((data) => {
-          console.log("comment_cloud:",JSON.parse(JSON.stringify(data)))
-          this.wordData=JSON.parse(JSON.stringify(data));
-          this.flag_word_cloud=true;
-          if(this.flag_map&&this.flag_column){
-            this.ShowPage = true;
-          }
+          this.content = data.data.content;
+          this.wordData = data.data.wordData;
+          this.mapData= data.data.mapData;
+          this.chartCategoryData= data.data.chartCategoryData;
+          this.chartPieData= data.data.chartPieData;
         })
         .catch((error) => {
           this.$message.error('接口调用异常：'+error);
@@ -187,7 +148,7 @@ export default {
       border-radius: 4px;
     }
   }
-
+  
 
   .box-card{
     min-height: 200px;
@@ -273,13 +234,9 @@ export default {
     }
 
   }
-
+  
 
   .chartCategory{
-    width: 100%;
-    height: 200px;
-  }
-  .chartPie{
     width: 100%;
     height: 200px;
   }

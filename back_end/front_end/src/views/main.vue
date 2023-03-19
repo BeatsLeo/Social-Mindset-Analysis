@@ -9,7 +9,7 @@
       <el-col :span="2">&nbsp;</el-col>
     </el-row>
     <el-row>
-      <el-input placeholder="请输入热点事件、心态、地区等" v-model="searchKeys" class="input-with-select">
+      <el-input placeholder="请输入热点事件、心态、时间、地区等，多个关键词用空格隔开" v-model="searchKeys" class="input-with-select">
         <el-button slot="append" icon="el-icon-search" @click="search()" :loading="searchLoading"></el-button>
       </el-input>
     </el-row>
@@ -24,7 +24,8 @@
               <span>{{item.name}}</span>
             </div>
             <div class="other">
-              <span class="num"><i class="iconfont icon-huoyan"></i>{{item.num}}</span>
+              <span class="actor">{{item.actor}}</span>
+              <span class="num"><i class="el-icon-s-opportunity"></i>{{item.num}}</span>
               <span class="type">{{item.type}}</span>
             </div>
           </div>
@@ -34,8 +35,8 @@
       <el-col :span="10">
         <h2><i class="el-icon-s-opportunity"></i>&nbsp;心态分布图</h2>
         <el-divider></el-divider>
-        <div class="map" v-if="ShowPage">
-          <china-map :attitude_color="mapData"></china-map>
+        <div class="map">
+          <china-map :citydata="mapData"></china-map>
         </div>
       </el-col>
       <el-col :span="2">&nbsp;</el-col>
@@ -46,7 +47,8 @@
 <script>
 import ajax from '../axios';
 import ChinaMap from '@/components/chinaMap.vue';
-import "../assets/icon/font/iconfont.css"
+import hotList from "../testdata/hotList";
+import mapData from "../testdata/mapData";
 
 export default {
   data () {
@@ -54,55 +56,36 @@ export default {
       searchKeys: "",
       searchLoading: false,
       activeName: 1,
-      ShowPage:false,
-      hotList:[],
-      mapData:[],
+      hotList,
+      mapData,
     }
   },
   components: {
     ChinaMap
   },
   mounted() {
-    this.init()
   },
   methods: {
     init(){
       ajax({
-        url: 'http://127.0.0.1:8000/api/index/event_list/',
+        url: '/xx/init.json',
         method: 'get',
         params: {
         }
       })
         .then((data) => {
-          if (data['respCode'] === '000000') {
-            console.log('event_list:',data['event_list'])
-            this.hotList = data['event_list']
-          } else {
-            this.$message.error('获取信息失败')
+          if(data.flag === false){
+            this.$message.info('获取信息失败');
+            return;
           }
+          this.hotList = data.data.hotList;
+          this.mapData = data.data.mapData;
         })
         .catch((error) => {
           this.$message.error('接口调用异常：'+error);
         })
         .finally(() => {
         });
-      ajax({
-        url: 'http://127.0.0.1:8000/api/index/attitude_map/',
-        method: 'get',
-        params: {
-        }
-      })
-        .then((data) => {
-          console.log("attitude_map:",JSON.parse(JSON.stringify(data)))
-          this.mapData=JSON.parse(JSON.stringify(data));
-          this.ShowPage = true;
-        })
-        .catch((error) => {
-          this.$message.error('接口调用异常：'+error);
-        })
-        .finally(() => {
-        });
-
     },
 
     search(){
@@ -112,18 +95,19 @@ export default {
       }
       this.searchLoading = true;
       ajax({
-        url: 'http://127.0.0.1:8000/api/index/event_list/',
+        url: '/xx/search.json',
         method: 'get',
         params: {
           searchKeys: this.searchKeys
         }
       })
         .then((data) => {
-          if (data['respCode'] === '000000') {
-            this.hotList = data['event_list']
-          } else {
-            this.$message.error('获取信息失败')
+          if(data.flag === false){
+            this.$message.info('查询失败');
+            return;
           }
+          this.$message.info('查询成功');
+          this.hotList = data.data;
         })
         .catch((error) => {
           this.$message.error('接口调用异常：'+error);
@@ -138,7 +122,6 @@ export default {
         path: "/hotpointdetail",
         query: {
           id: item.id,
-          content:item.content,
           active: this.$route.query.active
         },
       },()=>{},()=>{});
@@ -184,7 +167,7 @@ export default {
       margin-block-end: 10px;
       margin-left: 10px;
     }
-
+  
     .el-divider--horizontal {
       margin: 6px 0;
       height: 2px;
@@ -221,13 +204,17 @@ export default {
       font-weight: 600;
       display: none;
 
+      .actor{
+        padding: 10px;
+      }
+
       .num{
-        //margin-left: 30px;
+        margin-left: 30px;
         padding: 10px;
       }
 
       .type{
-        margin-left: 300px;
+        margin-left: 60px;
         padding: 10px;
         background: radial-gradient(ellipse 20px 8px at 50%, #c5e0b4b7, #fff0);
       }
