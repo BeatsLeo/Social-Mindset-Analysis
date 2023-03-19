@@ -45,7 +45,7 @@ def comments_detail(request):
             P.children.append(('event_distribution__province', p))
 
     con.add(P,'AND')
-    print("con:", con)
+    # print("con:", con)
     # 根据搜索条件去数据库获取
     try:
         response['province_map'] = []

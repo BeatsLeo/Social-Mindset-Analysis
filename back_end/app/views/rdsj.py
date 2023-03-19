@@ -67,7 +67,7 @@ def attitude_pie_column(request):
         count=models.comments_statistics.objects.filter(attitude=a,event_id__event_id=eventId).aggregate(nums=Coalesce(Sum('thumbs'), 0))['nums']
         attitude_count.append({a: count})
 
-    print("attitude_pie_column_count:",attitude_count)
+    # print("attitude_pie_column_count:",attitude_count)
     return JsonResponse(attitude_count, safe=False)
 
 # 评论词云
@@ -135,7 +135,7 @@ def event_list(request):
     s.add(q,'AND')
     s.add(P, 'AND')
     s.add(A, 'AND')
-    print("s:",s)
+    # print("s:",s)
     # 根据搜索条件去数据库获取
     try:
         response['province_map'] = []
@@ -173,5 +173,5 @@ def event_list(request):
         response['respMsg'] = str(e)
         response['respCode'] = '999999'
 
-    print("event_list:",response)
+    # print("event_list:",response)
     return JsonResponse(response)

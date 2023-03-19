@@ -118,7 +118,7 @@ def event_list(request):
                 attitude = attitude_map[str(text)]
                 con.children.append(('total_attitudes', attitude))
 
-    print("con:", con)
+    # print("con:", con)
     try:
         # 获取 choices 值
         attitude_choices = dict(models.event_statistics._meta.get_field('total_attitudes').flatchoices)
@@ -142,6 +142,6 @@ def event_list(request):
         response['respMsg'] = str(e)
         response['respCode'] = '999999'
 
-    print("event_list:",response)
+    # print("event_list:",response)
     return JsonResponse(response)
 
