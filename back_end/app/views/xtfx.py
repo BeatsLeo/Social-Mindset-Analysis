@@ -9,11 +9,11 @@ def comment_cloud(request):
     worddata= []
 
     attitudeId = request.GET.get('id', "")  # 获取查询参数
-    queryset=models.comments_key_words.objects.filter(attitude=attitudeId).values('word', 'numbers').order_by('numbers')[:30]
+    queryset=models.comments_key_words.objects.filter(attitude=attitudeId).values('word', 'numbers').order_by('-numbers')[:50]
     for object in queryset:
         worddata.append({'value': object['numbers'], 'name': object['word']})
 
-    print("worddata:",worddata)
+    # print("worddata:",worddata)
     return JsonResponse(worddata, safe=False)
 
 #心态详情
@@ -45,31 +45,40 @@ def comments_detail(request):
             P.children.append(('event_distribution__province', p))
 
     con.add(P,'AND')
+    print("con:", con)
     # 根据搜索条件去数据库获取
     try:
-        queryset = models.event_statistics.objects.filter(con).distinct()[:9]
-        querysetList = pd.DataFrame(list(queryset.values()))
-        hot = models.event_distribution.objects.values('event_id__event_id').annotate(number=Sum("hot")).order_by()
-        hotList = pd.DataFrame(list(hot))
-        hotList = hotList.rename(columns={'event_id__event_id': 'event_id'})
-        out = querysetList.merge(hotList)
-        out = out.rename(columns={'event_id': 'id', 'summary': "name", 'total_attitudes': 'type', 'post': 'content'})
-        out = out.to_dict(orient='records')
-        response['event_list'] = out
         response['province_map'] = []
-        response['respMsg'] = 'success'
-        response['respCode'] = '000000'
         for k, v in province_map.items():
             temp = {}
             temp['id'] = v
             temp['name'] = k
             response['province_map'].append(temp)
+        attitude_choices = dict(models.event_statistics._meta.get_field('total_attitudes').flatchoices)
+        queryset = models.event_statistics.objects.filter(con).values_list('event_id', 'summary', 'total_attitudes', 'post').distinct()[:9]
+        querysetList = [
+            {'id': event_id, 'name': summary, 'type': attitude_choices.get(total_attitudes), 'content': post} for
+            event_id, summary, total_attitudes, post in queryset]
+        querysetList = pd.DataFrame(querysetList)
+        if (querysetList.shape[0] == 0):
+            response['event_list'] = {}
+            response['respMsg'] = 'success'
+            response['respCode'] = '000000'
+            return JsonResponse(response)
+        hot = models.event_distribution.objects.values('event_id__event_id').annotate(num=Sum("hot")).order_by()
+        hotList = pd.DataFrame(list(hot))
+        hotList = hotList.rename(columns={'event_id__event_id': 'id'})
+        out = querysetList.merge(hotList)
+        out = out.to_dict(orient='records')
+        response['event_list'] = out
+        response['respMsg'] = 'success'
+        response['respCode'] = '000000'
 
     except Exception as e:
         response['respMsg'] = str(e)
         response['respCode'] = '999999'
 
-    print(response)
+    # print("comments_details_list:",response)
     return JsonResponse(response)
 
 #评论列表
@@ -82,12 +91,9 @@ def comments_list(request):
     # print(request.POST.getlist())
     attitude = request.GET.get('attitudes')
     commentsId = request.GET.get('comments_id')
-    print("commentsId:",commentsId)
-    print("attitude:",attitude)
     if (commentsId and attitude):
-        models.train.objects.create(label=attitude, comments_id_id=commentsId)
+        models.train.objects.create(label=attitude, comments_id_id=commentsId,correct=0)
         models.untrain.objects.filter(comments_id_id=commentsId).delete()
-        print("11111")
 
         return JsonResponse({'respMsg':'success','respCode':'000000'})
 
@@ -96,7 +102,7 @@ def comments_list(request):
         # 根据搜索条件去数据库获取
         response['comments_list'] = []
         response['attitude_map'] = []
-        queryset = models.untrain.objects.all()
+        queryset = models.untrain.objects.all()[:5]
         for object in queryset:
             temp = {}
             temp['id']=object.comments_id.comments_id
@@ -114,5 +120,5 @@ def comments_list(request):
         response['respMsg'] = str(e)
         response['respCode'] = '999999'
 
-    print("comments_list:",response)
+    # print("comments_list:",response)
     return JsonResponse(response)

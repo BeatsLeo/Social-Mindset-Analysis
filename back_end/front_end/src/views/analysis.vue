@@ -52,8 +52,8 @@
       <el-row>
         <h2><i class="el-icon-s-opportunity"></i>&nbsp;中国心态热力分布图</h2>
         <el-divider></el-divider>
-        <el-col :span="12">
-          <div class="map">
+        <el-col :span="12" >
+          <div class="map" >
             <china-map :attitude_color="mapData"></china-map>
           </div>
         </el-col>
@@ -61,7 +61,7 @@
       <el-row>
         <h2><i class="el-icon-cloudy"></i>&nbsp;心态占比饼图</h2>
         <el-divider></el-divider>
-        <el-col :span="24">
+        <el-col :span="24" >
             <div class="chartCategory">
               <chart-pie :attitude_count="chartPieData"></chart-pie>
             </div>

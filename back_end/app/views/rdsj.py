@@ -1,3 +1,7 @@
+import time
+
+from django.db.models.functions import Coalesce
+
 from app import models
 from django.db.models import Q
 import numpy as np
@@ -22,33 +26,35 @@ COLOR = {'0': {'color': '#FFF2CC', 'rgb': (255, 242, 204)},
 
 # 心态地图
 def attitude_map(request):
-    attitude_color=[]
-
     eventId = request.GET.get('id', "")  # 获取查询参数
+    attitude_color= []
+
     province_map = {v: k for k, v in models.comments_statistics.province_choices}
 
+    attitudes = models.comments_statistics.objects.filter(event_id__event_id = eventId).values('province', 'attitude').annotate(nums=Sum('thumbs'))
+
+    province_attitudes = {}
+    for attitude in attitudes:
+        province = attitude['province']
+        if province not in province_attitudes:
+            province_attitudes[province] = np.zeros(13, dtype=int)
+        province_attitudes[province][attitude['attitude']] = attitude['nums']
+
     for p in province_map.values():
-        r=0
-        g=0
-        b=0
-        count = 0
-        attitude_map=np.zeros(13)
-        attitude_count = models.comments_statistics.objects.filter(province=p, event_id__event_id = eventId).values('attitude').annotate(nums=Sum('thumbs')).order_by()
-        for q in attitude_count.values():
-            count += q['nums']
-            attitude_map[q['attitude']] = q['nums']
-        if (count != 0):
-            attitude_map = attitude_map / count
-        for c in range(13):
-            r+=COLOR[str(c)]['rgb'][0]*attitude_map[c]
-            g+=COLOR[str(c)]['rgb'][1]*attitude_map[c]
-            b+= COLOR[str(c)]['rgb'][2] * attitude_map[c]
-        if (r == 0 and g == 0 and b == 0):
+        r, g, b, count = 0, 0, 0, 0
+        if p in province_attitudes:
+            attitude_map = province_attitudes[p]
+            count = np.sum(attitude_map)
+            if count != 0:
+                attitude_map = attitude_map / count
+            r, g, b = np.dot(attitude_map, np.array([COLOR[str(c)]['rgb'] for c in range(13)]))
+
+        if r == 0 and g == 0 and b == 0:
             attitude_color.append({p: '255, 255, 255'})
         else:
-            attitude_color.append({p: str(r) + ',' + str(g) + ',' + str(b)})
+            attitude_color.append({p: f"{r:.0f},{g:.0f},{b:.0f}"})
 
-    print("attitude_map_color:",attitude_color)
+    # print("attitude_map_color:", attitude_color)
     return JsonResponse(attitude_color, safe=False)
 
 # 心态饼图&柱状图
@@ -57,13 +63,9 @@ def attitude_pie_column(request):
 
     eventId = request.GET.get('id', "")  # 获取查询参数
     attitude_map = {v: k for k, v in models.comments_statistics.attitude_choices}
-
     for a in attitude_map.values():
-        count=models.comments_statistics.objects.filter(attitude=a,event_id__event_id=eventId).aggregate(nums=Sum('thumbs'))
-        if count['nums']!=None:
-            attitude_count.append({a:count['nums']})
-        else:
-            attitude_count.append({a:0})
+        count=models.comments_statistics.objects.filter(attitude=a,event_id__event_id=eventId).aggregate(nums=Coalesce(Sum('thumbs'), 0))['nums']
+        attitude_count.append({a: count})
 
     print("attitude_pie_column_count:",attitude_count)
     return JsonResponse(attitude_count, safe=False)
@@ -73,11 +75,11 @@ def comment_cloud(request):
     worddata= []
 
     eventId = request.GET.get('id', "")  # 获取查询参数
-    queryset=models.comments_key_words.objects.filter(event_id__event_id=eventId).values('word', 'numbers').order_by('numbers')[:30]
+    queryset=models.comments_key_words.objects.filter(event_id__event_id=eventId).values('word', 'numbers').order_by('-numbers')[:50]
     for object in queryset:
         worddata.append({'value': object['numbers'], 'name': object['word']})
 
-    print("worddata:",worddata)
+    # print("worddata:",worddata)
     return JsonResponse(worddata, safe=False)
 
 #热点事件列表
@@ -133,22 +135,11 @@ def event_list(request):
     s.add(q,'AND')
     s.add(P, 'AND')
     s.add(A, 'AND')
-    print(s)
+    print("s:",s)
     # 根据搜索条件去数据库获取
     try:
-        queryset = models.event_statistics.objects.filter(s).distinct()[:9]
-        querysetList = pd.DataFrame(list(queryset.values()))
-        hot = models.event_distribution.objects.values('event_id__event_id').annotate(number=Sum("hot")).order_by()
-        hotList = pd.DataFrame(list(hot))
-        hotList = hotList.rename(columns={'event_id__event_id': 'event_id'})
-        out = querysetList.merge(hotList)
-        out = out.rename(columns={'event_id': 'id', 'summary': "name", 'total_attitudes': 'type', 'post': 'content'})
-        out = out.to_dict(orient='records')
-        response['event_list'] = out
         response['province_map'] = []
         response['attitude_map'] = []
-        response['respMsg'] = 'success'
-        response['respCode'] = '000000'
         for k,v in province_map.items():
             temp={}
             temp['id']=v
@@ -159,6 +150,25 @@ def event_list(request):
             temp['id']=v
             temp['name']=k
             response['attitude_map'].append(temp)
+        attitude_choices = dict(models.event_statistics._meta.get_field('total_attitudes').flatchoices)
+        queryset = models.event_statistics.objects.filter(s).values_list('event_id', 'summary', 'total_attitudes', 'post').distinct()[:9]
+        querysetList = [
+            {'id': event_id, 'name': summary, 'type': attitude_choices.get(total_attitudes), 'content': post} for
+            event_id, summary, total_attitudes, post in queryset]
+        querysetList = pd.DataFrame(querysetList)
+        if (querysetList.shape[0] == 0):
+            response['event_list'] = {}
+            response['respMsg'] = 'success'
+            response['respCode'] = '000000'
+            return JsonResponse(response)
+        hot = models.event_distribution.objects.values('event_id__event_id').annotate(num=Sum("hot")).order_by()
+        hotList = pd.DataFrame(list(hot))
+        hotList = hotList.rename(columns={'event_id__event_id': 'id'})
+        out = querysetList.merge(hotList)
+        out = out.to_dict(orient='records')
+        response['event_list'] = out
+        response['respMsg'] = 'success'
+        response['respCode'] = '000000'
     except Exception as e:
         response['respMsg'] = str(e)
         response['respCode'] = '999999'

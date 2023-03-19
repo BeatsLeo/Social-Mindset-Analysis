@@ -1,12 +1,13 @@
+import time
+
 from app import models
 from django.db.models import Q
 import numpy as np
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.db.models import Sum
-import operator
 import pandas as pd
-
+from django.db.models.functions import Coalesce
 
 COLOR = {'0': {'color': '#FFF2CC', 'rgb': (255, 242, 204)},
          '1': {'color': '#FFE699', 'rgb': (255, 230, 153)},
@@ -27,83 +28,68 @@ def attitude_map(request):
     attitude_color= []
 
     province_map = {v: k for k, v in models.comments_statistics.province_choices}
-    # count = models.comments_statistics.objects.values('province').annotate(nums=Sum('thumbs')).order_by()
-    # print(list(attitude_count))
+
+    attitudes = models.comments_statistics.objects.values('province', 'attitude').annotate(nums=Sum('thumbs'))
+
+    province_attitudes = {}
+    for attitude in attitudes:
+        province = attitude['province']
+        if province not in province_attitudes:
+            province_attitudes[province] = np.zeros(13, dtype=int)
+        province_attitudes[province][attitude['attitude']] = attitude['nums']
 
     for p in province_map.values():
-        r=0
-        g=0
-        b=0
-        count=0
-        attitude_map=np.zeros(13)
+        r, g, b, count = 0, 0, 0, 0
+        if p in province_attitudes:
+            attitude_map = province_attitudes[p]
+            count = np.sum(attitude_map)
+            if count != 0:
+                attitude_map = attitude_map / count
+            r, g, b = np.dot(attitude_map, np.array([COLOR[str(c)]['rgb'] for c in range(13)]))
 
-
-        attitude_count=models.comments_statistics.objects.filter(province=p).values('attitude').annotate(nums=Sum('thumbs')).order_by()
-        for q in attitude_count:
-            count+=q['nums']
-            attitude_map[q['attitude']] = q['nums']
-        if(count!=0):
-            attitude_map=attitude_map/count
-        for c in range(13):
-            r+=COLOR[str(c)]['rgb'][0]*attitude_map[c]
-            g+=COLOR[str(c)]['rgb'][1]*attitude_map[c]
-            b+= COLOR[str(c)]['rgb'][2] * attitude_map[c]
-        if(r==0 and g==0 and b==0):
-            attitude_color.append({p:'255, 255, 255'})
+        if r == 0 and g == 0 and b == 0:
+            attitude_color.append({p: '255, 255, 255'})
         else:
-            attitude_color.append({p:str(r)+','+str(g)+','+str(b)})
-    print("attitude_map_color:",attitude_color)
-
+            attitude_color.append({p: f"{r:.0f},{g:.0f},{b:.0f}"})
+    # print("attitude_map_color:", attitude_color)
     return JsonResponse(attitude_color, safe=False)
 
 # 心态饼图
 def attitude_pie(request):
-    attitude_count= []
-
-    attitude_map = {v: k for k, v in models.comments_statistics.attitude_choices}
-    for a in attitude_map.values():
-        count=models.comments_statistics.objects.filter(attitude=a).aggregate(nums=Sum('thumbs'))
-        if count['nums'] != None:
-            attitude_count.append({a: count['nums']})
-        else:
-            attitude_count.append({a: 0})
-
-    print("attitude_pie_count:",attitude_count)
+    attitude_counts = models.comments_statistics.objects.values('attitude').annotate(nums=Coalesce(Sum('thumbs'), 0)).order_by('attitude')
+    attitude_count=[{ac['attitude']: ac['nums']} for ac in attitude_counts]
+    # print("attitude_pie_count:", attitude_count)
     return JsonResponse(attitude_count, safe=False)
+
 
 # 心态柱状图
 def attitude_column(request):
-    hot_count= {}
-    count=0
+    # 获取各省热度总和
+    hot_count = models.event_distribution.objects \
+        .values('province') \
+        .annotate(hot_sum=Sum('hot')) \
+        .order_by('-hot_sum') \
+        .values_list('province', 'hot_sum')
 
-    province_map = {v: k for k, v in models.comments_statistics.province_choices}
-    province=list(province_map.keys())
-    for p in province_map.values():
-        pro=province[p]
-        hot_count[pro]=0
-        count=models.event_distribution.objects.filter(province=p).aggregate(Sum('hot'))['hot__sum']
-        if(count!=None):
-           hot_count[pro]=count
-    sorted_hot_count = dict(sorted(hot_count.items(), key=operator.itemgetter(1), reverse=True))
+    # 将省份代码转为名称
+    province_map = dict(models.comments_statistics.province_choices)
+    hot_count = [{province_map.get(p, ''): hot} for p, hot in hot_count]
 
-    hot_count=[]
-    for k,v in sorted_hot_count.items():
-        hot_count.append({k:v})
-    print("hot_column_count:",hot_count)
+    # print("hot_column_count:", hot_count)
     return JsonResponse(hot_count, safe=False)
 
 # 热点事件关键词云
 def event_cloud(request):
     worddata= []
 
-    queryset=models.event_key_words.objects.values('word','numbers').all().order_by('numbers')[:15]
+    queryset=models.event_key_words.objects.values('word','numbers').all().order_by('-numbers')[:25]
     for object in queryset:
         worddata.append({'value':object['numbers'],'name':object['word']})
-    queryset=models.comments_key_words.objects.values('word', 'numbers').all().order_by('numbers')[:15]
+    queryset=models.comments_key_words.objects.values('word', 'numbers').all().order_by('-numbers')[:25]
     for object in queryset:
         worddata.append({'value': object['numbers'], 'name': object['word']})
 
-    print("worddata:",worddata)
+    # print("worddata:",worddata)
     return JsonResponse(worddata, safe=False)
 
 # 热点事件列表
@@ -132,17 +118,24 @@ def event_list(request):
                 attitude = attitude_map[str(text)]
                 con.children.append(('total_attitudes', attitude))
 
+    print("con:", con)
     try:
-        queryset = models.event_statistics.objects.filter(con)[:9]
-        querysetList=pd.DataFrame(list(queryset.values()))
+        # 获取 choices 值
+        attitude_choices = dict(models.event_statistics._meta.get_field('total_attitudes').flatchoices)
+        queryset = models.event_statistics.objects.filter(con).values_list('event_id','summary','total_attitudes','post').distinct()[:9]
+        querysetList=[{'id':event_id, 'name': summary,'type':attitude_choices.get(total_attitudes),'content':post} for event_id,summary,total_attitudes,post in queryset]
+        querysetList=pd.DataFrame(querysetList)
+        if(querysetList.shape[0]==0):
+            response['event_list'] = {}
+            response['respMsg'] = 'success'
+            response['respCode'] = '000000'
+            return JsonResponse(response)
         hot=models.event_distribution.objects.values('event_id__event_id').annotate(num=Sum("hot")).order_by()
         hotList=pd.DataFrame(list(hot))
-        hotList=hotList.rename(columns={'event_id__event_id':'event_id'})
+        hotList=hotList.rename(columns={'event_id__event_id':'id'})
         out=querysetList.merge(hotList)
-        out=out.rename(columns={'event_id':'id','summary':"name",'total_attitudes':'type','post':'content'})
         out=out.to_dict(orient='records')
         response['event_list']=out
-        # print(response['event_list'])
         response['respMsg'] = 'success'
         response['respCode'] = '000000'
     except Exception as e:
