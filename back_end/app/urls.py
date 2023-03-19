@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.urls import path
 
-from app.views import account, index, rdsj, xtfx, xttz
+from app.views import account, index, rdsj, xtfx, xttz, model
 
 urlpatterns = [
     # 登录
@@ -44,4 +44,10 @@ urlpatterns = [
 
     # 心态调整建议库
     path('xttz/', xttz.xttz),
+
+    # 模型接口
+    path('model/text_summary/', model.text_summary),
+    path('model/attitude_classification/', model.attitude_classification),
+    path('model/named_body_recognition/', model.named_body_recognition),
+    path('model/guide_recommendation_generation/', model.guide_recommendation_generation),
 ]
