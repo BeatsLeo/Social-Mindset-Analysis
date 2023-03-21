@@ -1,0 +1,23 @@
+{
+  "id": "3936505",
+  "name": "hotpoint",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1221891",
+      "name": "火焰",
+      "font_class": "hot",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    },
+    {
+      "icon_id": "6464728",
+      "name": "火焰",
+      "font_class": "huoyan",
+      "unicode": "e61b",
+      "unicode_decimal": 58907
+    }
+  ]
+}

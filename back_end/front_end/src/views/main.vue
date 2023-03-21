@@ -88,6 +88,9 @@
 import ajax from '../axios';
 import ChinaMap from '@/components/chinaMap.vue';
 import "../assets/icon/font/iconfont.css"
+import wordCloud from '@/components/wordCloud.vue';
+import ChartCategory from '@/components/chartCategory_attitude.vue';
+import ChartPie from '@/components/chartPie.vue';
 
 export default {
   data () {
@@ -98,6 +101,9 @@ export default {
       ShowPage:false,
       hotList:[],
       mapData:[],
+      wordData:[],
+      chartCategoryData:[],
+      chartPieData:[],
     }
   },
   components: {
