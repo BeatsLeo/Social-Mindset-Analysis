@@ -89,7 +89,7 @@ export default {
       this.id=this.$route.query.id;
 
       ajax({
-        url: 'http://127.0.0.1:8000/api/rdsj/attitude_map/',
+        url: '/api/rdsj/attitude_map/',
         method: 'get',
         params: {
           id:this.id,
@@ -109,7 +109,7 @@ export default {
         .finally(() => {
         });
       ajax({
-        url: 'http://127.0.0.1:8000/api/rdsj/attitude_pie_column/',
+        url: '/api/rdsj/attitude_pie_column/',
         method: 'get',
         params: {
           id:this.id,
@@ -130,7 +130,7 @@ export default {
         .finally(() => {
         });
       ajax({
-        url: 'http://127.0.0.1:8000/api/rdsj/comment_cloud/',
+        url: '/api/rdsj/comment_cloud/',
         method: 'get',
         params: {
           id:this.id,

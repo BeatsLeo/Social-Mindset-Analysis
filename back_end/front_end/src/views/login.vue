@@ -85,7 +85,7 @@ export default {
       let md5Password = md5(this.password);
       this.$message.info('调用登陆: '+this.username+ '  '+ this.password + '  ' + md5Password);
       ajax({
-        url: 'http://127.0.0.1:8000/api/login/',
+        url: '/api/login/',
         method: 'post',
         data: {
           l_username: this.username,

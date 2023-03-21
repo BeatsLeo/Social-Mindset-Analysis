@@ -13,7 +13,7 @@ Vue.use(VueCookies)
 Vue.prototype.dayjs = dayjs;
 Vue.config.productionTip = false
 Vue.use(ElementUI);
-// axios.defaults.baseURL = 'http://127.0.0.1:8000'
+
 
 /* eslint-disable no-new */
 new Vue({

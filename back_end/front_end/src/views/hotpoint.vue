@@ -48,7 +48,8 @@
           </el-input>
         </el-col>
       </el-row>
-      <el-row v-for="(item) in hotList.slice((currpage-1)*eachpage,currpage*eachpage)" :key="item.id">
+<!--      .slice((currpage-1)*eachpage,currpage*eachpage)-->
+      <el-row v-for="(item) in hotList" :key="item.id">
         <div class="itemClass" @click="detail(item)">
           <div class="title">
             <span>{{item.name}}</span>
@@ -63,9 +64,9 @@
       <el-row>
         <!--<el-button type="text" icon="el-icon-arrow-down" @click="nextPage()">展开列表</el-button>-->
         <div style="float:right;margin-right:50px;">
-        <span v-if="currpage>1" @click="currpage--">上一页</span>
+        <span v-if="currpage>1" @click="changePage(currpage,page_flag=false)">上一页</span>
         <span>{{currpage}}</span>/<span>{{pagesum}}</span>
-        <span v-if="currpage<pagesum" @click="currpage++">下一页</span>
+        <span v-if="currpage<pagesum" @click="changePage(currpage,page_flag=true)">下一页</span>
         </div>
       </el-row>
     </el-col>
@@ -122,6 +123,7 @@ export default {
       flag_map:false,
       flag_column:false,
       flag_word_cloud:false,
+      page_flag:false,
 
       query_dq: "",
       query_mentality: "",
@@ -129,7 +131,7 @@ export default {
       query_key: "",
 
       pageSize: 7,
-      pagesum: 3, //总页数
+      pagesum: "", //总页数
       currpage: 1, //当前页数
       eachpage: 8, //每页行数
     }
@@ -141,16 +143,19 @@ export default {
   },
   mounted() {
     this.search();
+    // this.changePage();
   },
   methods: {
     getStaffList:function(){
             var _this = this;
+            alert("1")
             this.$http.post(
                 _this.baseUrl+"/StaffController/getStaffList",
                 {}
             ).then(function(result){
                 var res = result.body;
                 if(res.resultCode="0000"){
+                    alert
                     _this.staffList=res.data;
                     _this.pagesum = Math.ceil(_this.staffList.length/_this.eachpage);
                 }else{
@@ -158,6 +163,44 @@ export default {
                 }
             });
           },
+    changePage(){
+      var da={}
+      da={
+          dq:this.query_dq ,
+          mentality: this.query_mentality,
+          date: this.query_date,
+          key: this.query_key,
+          flag:this.page_flag,
+          curpage:this.currpage,
+      }
+      da=qs.stringify(da,{arrayFormat:'repeat'})
+      ajax({
+        url: '/api/rdsj/event_list/?'+da,
+        method: 'get',
+      })
+        .then((data) => {
+          if (data['respCode'] === '000000') {
+            this.hotList = data['event_list']
+            this.pagesum= data['count_page']
+            this.dqData = data['province_map']
+            if(this.page_flag){
+              this.currpage++
+            }
+            else {
+              this.currpage--
+            }
+          } else {
+            this.$message.error('获取信息失败')
+          }
+        })
+        .catch((error) => {
+          this.$message.error('接口调用异常：'+error);
+        })
+        .finally(() => {
+          this.searchLoading = false;
+        });
+
+    },
     search(){
       this.searchLoading = true;
       if(this.query_date){
@@ -171,17 +214,18 @@ export default {
           mentality: this.query_mentality,
           date: this.query_date,
           key: this.query_key,
-          curPage: 0,
-          pageSize: this.pageSize,
       }
       da=qs.stringify(da,{arrayFormat:'repeat'})
       ajax({
-        url: 'http://127.0.0.1:8000/api/rdsj/event_list/?'+da,
+        url: '/api/rdsj/event_list/?'+da,
         method: 'get',
       })
         .then((data) => {
           if (data['respCode'] === '000000') {
             this.hotList = data['event_list']
+            console.log(this.hotList)
+            this.pagesum= data['count_page']
+            console.log(this.pagesum)
             this.dqData = data['province_map']
           } else {
             this.$message.error('获取信息失败')
@@ -193,14 +237,14 @@ export default {
         .finally(() => {
           this.searchLoading = false;
         });
-        
+
       ajax({
-        url: 'http://127.0.0.1:8000/api/index/attitude_map/',
+        url: '/api/index/attitude_map/',
         method: 'get',
         params: {
         }
       })
-     
+
         .then((data) => {
           console.log("attitude_map:",JSON.parse(JSON.stringify(data)))
           this.mapData=JSON.parse(JSON.stringify(data));
@@ -216,7 +260,7 @@ export default {
         });
 
       ajax({
-        url: 'http://127.0.0.1:8000/api/index/attitude_column/',
+        url: '/api/index/attitude_column/',
         method: 'get',
         params: {
         }
@@ -236,7 +280,7 @@ export default {
         });
 
       ajax({
-        url: 'http://127.0.0.1:8000/api/index/event_cloud/',
+        url: '/api/index/event_cloud/',
         method: 'get',
         params: {
         }

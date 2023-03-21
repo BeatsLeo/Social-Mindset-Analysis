@@ -1,3 +1,4 @@
+import math
 import time
 
 from django.db.models.functions import Coalesce
@@ -103,6 +104,8 @@ def event_list(request):
     provinces = request.GET.getlist('dq') # 地区
     attitudes = request.GET.getlist('mentality') # 心态
     date = request.GET.getlist('date')  # 时间
+    flag = request.GET.get('flag')
+    curpage=request.GET.get('curpage')
     # 复选条件-时间——》筛选器
     if(date.__len__()==2):
         s.children.append(('event_distribution__event_time__range', (date[0], date[1])))
@@ -151,7 +154,18 @@ def event_list(request):
             temp['name']=k
             response['attitude_map'].append(temp)
         attitude_choices = dict(models.event_statistics._meta.get_field('total_attitudes').flatchoices)
-        queryset = models.event_statistics.objects.filter(s).values_list('event_id', 'summary', 'total_attitudes', 'post').distinct()[:9]
+        count_page = models.event_statistics.objects.filter(s).distinct().count()
+        print(count_page/8)
+        response['count_page'] = math.ceil(count_page/8)
+        if(flag==None):
+            queryset = models.event_statistics.objects.filter(s).values_list('event_id', 'summary', 'total_attitudes',
+                                                                             'post').distinct()[0:8]
+        elif(flag=='false'):
+            queryset = models.event_statistics.objects.filter(s).values_list('event_id', 'summary', 'total_attitudes',
+                                                                             'post').distinct()[(int(curpage)*8-16):int(curpage)*8-8]
+        elif(flag=='true'):
+            queryset = models.event_statistics.objects.filter(s).values_list('event_id', 'summary', 'total_attitudes',
+                                                                             'post').distinct()[int(curpage) * 8:(int(curpage) * 8+8)]
         querysetList = [
             {'id': event_id, 'name': summary, 'type': attitude_choices.get(total_attitudes), 'content': post} for
             event_id, summary, total_attitudes, post in queryset]
@@ -173,5 +187,5 @@ def event_list(request):
         response['respMsg'] = str(e)
         response['respCode'] = '999999'
 
-    # print("event_list:",response)
+    print("event_list:",response)
     return JsonResponse(response)

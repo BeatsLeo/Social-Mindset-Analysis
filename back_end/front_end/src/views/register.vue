@@ -38,7 +38,7 @@
       register() {
         let md5Password = md5(this.password);
         ajax({
-          url: 'http://127.0.0.1:8000/api/regist/',
+          url: '/api/regist/',
           method: 'post',
           data: {
             username: this.username,

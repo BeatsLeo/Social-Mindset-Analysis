@@ -79,7 +79,7 @@
         </el-row>
         </el-col>
       </el-col>
-        
+
     </el-row>
   </div>
 </template>
@@ -109,7 +109,7 @@ export default {
   methods: {
     init(){
       ajax({
-        url: 'http://127.0.0.1:8000/api/index/event_list/',
+        url: '/api/index/event_list/',
         method: 'get',
         params: {
         }
@@ -128,7 +128,7 @@ export default {
         .finally(() => {
         });
       ajax({
-        url: 'http://127.0.0.1:8000/api/index/attitude_map/',
+        url: '/api/index/attitude_map/',
         method: 'get',
         params: {
         }
@@ -153,7 +153,7 @@ export default {
       }
       this.searchLoading = true;
       ajax({
-        url: 'http://127.0.0.1:8000/api/index/event_list/',
+        url: '/api/index/event_list/',
         method: 'get',
         params: {
           searchKeys: this.searchKeys

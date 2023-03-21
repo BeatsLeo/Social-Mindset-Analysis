@@ -112,7 +112,7 @@ export default {
     init(){
       this.suggestContent = this.mentality+"====所谓引导建议，关键是引导建议需要如何写。 引导建议的发生，到底需要如何做到，不引导建议的发生，又会如何产生。 就我个人来说，引导建议对我的意义，不能不说非常重大。 而这些并不是完全重要，更加重要的问题是， 既然如此， 一般来讲，我们都必须务必慎重的考虑考虑。 伏尔泰在不经意间这样说过，不经巨大的困难，不会有伟大的事业。我希望诸位也能好好地体会这句话。 引导建议，发生了会如何，不发生又会如何。【放一点废话】";
       ajax({
-        url: 'http://127.0.0.1:8000/api/xtfx/comments_list/',
+        url: '/api/xtfx/comments_list/',
         method: 'get',
         params: {
         }
@@ -130,7 +130,7 @@ export default {
         .finally(() => {
         });
       ajax({
-        url: 'http://127.0.0.1:8000/api/index/attitude_map/',
+        url: '/api/index/attitude_map/',
         method: 'get',
         params: {
         }
@@ -149,7 +149,7 @@ export default {
         .finally(() => {
         });
     ajax({
-        url: 'http://127.0.0.1:8000/api/index/attitude_pie/',
+        url: '/api/index/attitude_pie/',
         method: 'get',
         params: {
         }
@@ -200,13 +200,13 @@ export default {
       }
       da=qs.stringify(da,{arrayFormat:'repeat'})
       ajax({
-        url: 'http://127.0.0.1:8000/api/xtfx/comments_list/?'+da,
+        url: '/api/xtfx/comments_list/?'+da,
         method: 'get',
       })
         .then((data) => {
           if (data['respCode'] === '000000') {
             ajax({
-        url: 'http://127.0.0.1:8000/api/xtfx/comments_list/',
+        url: '/api/xtfx/comments_list/',
         method: 'get',
         params: {
         }

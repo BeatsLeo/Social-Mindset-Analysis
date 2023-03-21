@@ -141,7 +141,7 @@
       }
       da=qs.stringify(da,{arrayFormat:'repeat'})
         ajax({
-          url: 'http://127.0.0.1:8000/api/xtfx/comments_detail/?'+da,
+          url: '/api/xtfx/comments_detail/?'+da,
           method: 'get'
         })
           .then((data) => {
@@ -159,7 +159,7 @@
             this.searchLoading = false;
           });
         ajax({
-        url: 'http://127.0.0.1:8000/api/xtfx/comment_cloud/',
+        url: '/api/xtfx/comment_cloud/',
         method: 'get',
         params: {
           id:this.id,
