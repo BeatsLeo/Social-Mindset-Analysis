@@ -58,7 +58,7 @@ export default {
       }else{
         return;
       }
-      
+
       this.$router.push({
         path: gotopath,
         query: {

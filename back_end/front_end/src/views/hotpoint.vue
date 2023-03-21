@@ -48,26 +48,31 @@
           </el-input>
         </el-col>
       </el-row>
-      <el-row v-for="(item) in hotList" :key="item.id">
+      <el-row v-for="(item) in hotList.slice((currpage-1)*eachpage,currpage*eachpage)" :key="item.id">
         <div class="itemClass" @click="detail(item)">
           <div class="title">
             <span>{{item.name}}</span>
           </div>
           <div class="other">
             <span class="actor">{{item.actor}}</span>
-            <span class="num"><i class="el-icon-s-opportunity"></i>{{item.num}}</span>
+            <span class="num"><i class="iconfont icon-huoyan"></i>{{item.num}}</span>
             <span class="type">{{item.type}}</span>
           </div>
         </div>
       </el-row>
       <el-row>
-        <el-button type="text" icon="el-icon-arrow-down" @click="nextPage()">展开列表</el-button>
+        <!--<el-button type="text" icon="el-icon-arrow-down" @click="nextPage()">展开列表</el-button>-->
+        <div style="float:right;margin-right:50px;">
+        <span v-if="currpage>1" @click="currpage--">上一页</span>
+        <span>{{currpage}}</span>/<span>{{pagesum}}</span>
+        <span v-if="currpage<pagesum" @click="currpage++">下一页</span>
+        </div>
       </el-row>
     </el-col>
 
     <el-col :span="2">&nbsp;</el-col>
 
-    <el-col :span="11">
+    <el-col :span="11" v-if="ShowPage">
       <el-row>
         <h2><i class="el-icon-cloudy"></i>&nbsp;热点事件关键词云</h2>
         <el-divider></el-divider>
@@ -80,12 +85,12 @@
         <el-divider></el-divider>
         <el-col :span="12">
           <div class="map">
-            <china-map :citydata="mapData"></china-map>
+            <china-map :attitude_color="mapData"></china-map>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="chartCategory">
-            <chart-category :chartCategoryData="chartCategoryData"></chart-category>
+            <chart-category :hot_count="chartCategoryData"></chart-category>
           </div>
         </el-col>
       </el-row>
@@ -95,34 +100,38 @@
 
 <script>
 import ajax from '../axios';
+import qs from 'qs';
 import wordCloud from '@/components/wordCloud.vue';
 import ChinaMap from '@/components/chinaMap.vue';
-import ChartCategory from '@/components/chartCategory.vue';
-import hotList from "../testdata/hotList";
-import wordData from "../testdata/wordData";
-import mapData from "../testdata/mapData";
-import chartCategoryData from "../testdata/chartCategoryData";
-import dqData from "../testdata/dqData";
+import ChartCategory from '@/components/chartCategory_hot.vue';
 import mentalityData from "../testdata/mentalityData";
+import "../assets/icon/font/iconfont.css"
 
 export default {
   data () {
     return {
       searchLoading: false,
 
-      hotList,
-      wordData,
-      mapData,
-      chartCategoryData,
-      dqData,
+      hotList:[],
+      wordData:[],
+      mapData:[],
+      chartCategoryData:[],
+      dqData:[],
       mentalityData,
+      ShowPage:false,
+      flag_map:false,
+      flag_column:false,
+      flag_word_cloud:false,
 
       query_dq: "",
       query_mentality: "",
       query_date: "",
       query_key: "",
 
-      pageSize: 7
+      pageSize: 7,
+      pagesum: 3, //总页数
+      currpage: 1, //当前页数
+      eachpage: 8, //每页行数
     }
   },
   components: {
@@ -134,35 +143,116 @@ export default {
     this.search();
   },
   methods: {
+    getStaffList:function(){
+            var _this = this;
+            this.$http.post(
+                _this.baseUrl+"/StaffController/getStaffList",
+                {}
+            ).then(function(result){
+                var res = result.body;
+                if(res.resultCode="0000"){
+                    _this.staffList=res.data;
+                    _this.pagesum = Math.ceil(_this.staffList.length/_this.eachpage);
+                }else{
+                    alert(res.resultMsg);
+                }
+            });
+          },
     search(){
       this.searchLoading = true;
-      ajax({
-        url: '/xx/hotpointlist.json',
-        method: 'get',
-        params: {
-          dq: this.query_dq,
+      if(this.query_date){
+        for(var i=0;i<=1;i++){
+          this.query_date[i] = this.dayjs(this.query_date[i]).format("YYYY-MM-DD")
+        }
+      }
+      var da={}
+      da={
+          dq:this.query_dq ,
           mentality: this.query_mentality,
           date: this.query_date,
           key: this.query_key,
           curPage: 0,
           pageSize: this.pageSize,
-        }
+      }
+      da=qs.stringify(da,{arrayFormat:'repeat'})
+      ajax({
+        url: 'http://127.0.0.1:8000/api/rdsj/event_list/?'+da,
+        method: 'get',
       })
         .then((data) => {
-          if(data.flag === false){
-            this.$message.info('查询失败');
-            return;
+          if (data['respCode'] === '000000') {
+            this.hotList = data['event_list']
+            this.dqData = data['province_map']
+          } else {
+            this.$message.error('获取信息失败')
           }
-          this.hotList = data.data.hotList;
-          this.mapData = data.data.mapData;
-          this.wordData = data.data.wordData;
-          this.chartCategoryData = data.data.chartCategoryData;
         })
         .catch((error) => {
           this.$message.error('接口调用异常：'+error);
         })
         .finally(() => {
           this.searchLoading = false;
+        });
+        
+      ajax({
+        url: 'http://127.0.0.1:8000/api/index/attitude_map/',
+        method: 'get',
+        params: {
+        }
+      })
+     
+        .then((data) => {
+          console.log("attitude_map:",JSON.parse(JSON.stringify(data)))
+          this.mapData=JSON.parse(JSON.stringify(data));
+          this.flag_map=true;
+          if(this.flag_column&&this.flag_word_cloud){
+            this.ShowPage = true;
+          }
+        })
+        .catch((error) => {
+          this.$message.error('接口调用异常：'+error);
+        })
+        .finally(() => {
+        });
+
+      ajax({
+        url: 'http://127.0.0.1:8000/api/index/attitude_column/',
+        method: 'get',
+        params: {
+        }
+      })
+        .then((data) => {
+          console.log("attitude_column:",JSON.parse(JSON.stringify(data)))
+          this.chartCategoryData=JSON.parse(JSON.stringify(data));
+          this.flag_column=true;
+          if(this.flag_map&&this.flag_word_cloud){
+            this.ShowPage = true;
+          }
+        })
+        .catch((error) => {
+          this.$message.error('接口调用异常：'+error);
+        })
+        .finally(() => {
+        });
+
+      ajax({
+        url: 'http://127.0.0.1:8000/api/index/event_cloud/',
+        method: 'get',
+        params: {
+        }
+      })
+        .then((data) => {
+          console.log("event_cloud:",JSON.parse(JSON.stringify(data)))
+          this.wordData=JSON.parse(JSON.stringify(data));
+          this.flag_word_cloud=true;
+          if(this.flag_map&&this.flag_column){
+            this.ShowPage = true;
+          }
+        })
+        .catch((error) => {
+          this.$message.error('接口调用异常：'+error);
+        })
+        .finally(() => {
         });
     },
     nextPage(){
@@ -176,6 +266,7 @@ export default {
         path: "/hotpointdetail",
         query: {
           id: item.id,
+          content:item.content,
           active: this.$route.query.active
         },
       },()=>{},()=>{});
@@ -188,7 +279,7 @@ export default {
 .hotpointView{
   width:100%;
   height:100%;
-  
+
   .listquery{
     margin-bottom: 10px;
     .el-input-group{
@@ -232,17 +323,14 @@ export default {
       font-weight: 600;
       display: none;
 
-      .actor{
-        padding: 10px;
-      }
 
       .num{
-        margin-left: 30px;
         padding: 10px;
       }
 
       .type{
-        margin-left: 60px;
+        //float: right;
+        margin-left: 440px;
         padding: 10px;
         background: radial-gradient(ellipse 20px 8px at 50%, #c5e0b4b7, #fff0);
       }
