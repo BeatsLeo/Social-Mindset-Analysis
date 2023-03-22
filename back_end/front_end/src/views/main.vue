@@ -32,8 +32,8 @@
         <el-row>
         <h2><i class="el-icon-s-opportunity"></i>&nbsp;心态分布图</h2>
         <el-divider></el-divider>
-        <div class="map">
-          <china-map :citydata="mapData"></china-map>
+        <div class="map" v-if="ShowPage_map">
+          <china-map :attitude_color="mapData"></china-map>
         </div>
       </el-row>
       </el-col>
@@ -50,7 +50,7 @@
         <el-row>
         <h2><i class="el-icon-cloudy"></i>&nbsp;词云</h2>
         <el-divider></el-divider>
-        <div class="wordcloud">
+        <div class="wordcloud" v-if="ShowPage_word">
         <word-cloud :worddata="wordData"></word-cloud>
         </div>
         </el-row>
@@ -62,8 +62,8 @@
           <h2><i class="el-icon-sort"></i>&nbsp;心态变化时间图</h2>
           <el-divider></el-divider>
           <el-col :span="24">
-            <div class="chartCategory">
-              <chart-pie :chartPieData="chartPieData"></chart-pie>
+            <div class="chartCategory" v-if="ShowPage_pie">
+              <chart-pie :attitude_count="chartPieData"></chart-pie>
             </div>
           </el-col>
           </el-row>
@@ -71,8 +71,8 @@
           <h2><i class="el-icon-loading"></i>&nbsp;热点地区变化时间图</h2>
           <el-divider></el-divider>
           <el-col :span="24">
-          <div class="chartCategory">
-            <chart-category :chartCategoryData="chartCategoryData"></chart-category>
+          <div class="chartCategory" v-if="ShowPage_column">
+            <chart-category :hot_count="chartCategoryData"></chart-category>
           </div>
         </el-col>
           </el-row>
@@ -89,7 +89,7 @@ import ajax from '../axios';
 import ChinaMap from '@/components/chinaMap.vue';
 import "../assets/icon/font/iconfont.css"
 import wordCloud from '@/components/wordCloud.vue';
-import ChartCategory from '@/components/chartCategory_attitude.vue';
+import ChartCategory from '@/components/chartCategory_hot.vue';
 import ChartPie from '@/components/chartPie.vue';
 
 export default {
@@ -104,10 +104,17 @@ export default {
       wordData:[],
       chartCategoryData:[],
       chartPieData:[],
+      ShowPage_word:false,
+      ShowPage_map:false,
+      ShowPage_pie:false,
+      ShowPage_column:false,
     }
   },
   components: {
-    ChinaMap
+    ChinaMap,
+    wordCloud,
+    ChartCategory,
+    ChartPie
   },
   mounted() {
     this.init()
@@ -142,14 +149,61 @@ export default {
         .then((data) => {
           console.log("attitude_map:",JSON.parse(JSON.stringify(data)))
           this.mapData=JSON.parse(JSON.stringify(data));
-          this.ShowPage = true;
+          this.ShowPage_map = true;
         })
         .catch((error) => {
           this.$message.error('接口调用异常：'+error);
         })
         .finally(() => {
         });
-
+      ajax({
+        url: '/api/index/attitude_pie/',
+        method: 'get',
+        params: {
+        }
+      })
+        .then((data) => {
+          console.log("attitude_pie:",JSON.parse(JSON.stringify(data)))
+          this.chartPieData=JSON.parse(JSON.stringify(data));
+          this.ShowPage_pie = true;
+        })
+        .catch((error) => {
+          this.$message.error('接口调用异常：'+error);
+        })
+        .finally(() => {
+        });
+      ajax({
+        url: '/api/index/event_cloud/',
+        method: 'get',
+        params: {
+        }
+      })
+        .then((data) => {
+          console.log("event_cloud:",JSON.parse(JSON.stringify(data)))
+          this.wordData=JSON.parse(JSON.stringify(data));
+          this.ShowPage_word = true;
+        })
+        .catch((error) => {
+          this.$message.error('接口调用异常：'+error);
+        })
+        .finally(() => {
+        });
+      ajax({
+        url: '/api/index/attitude_column/',
+        method: 'get',
+        params: {
+        }
+      })
+        .then((data) => {
+          console.log("attitude_column:",JSON.parse(JSON.stringify(data)))
+          this.chartCategoryData=JSON.parse(JSON.stringify(data));
+          this.ShowPage_column = true;
+        })
+        .catch((error) => {
+          this.$message.error('接口调用异常：'+error);
+        })
+        .finally(() => {
+        });
     },
 
     search(){
