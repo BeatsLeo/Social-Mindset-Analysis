@@ -53,7 +53,7 @@
             this.$message.info('注册成功');
             //跳主页
             this.$router.push({
-              path: '/main',
+              path: '/login',
               query: {
               },
             });
