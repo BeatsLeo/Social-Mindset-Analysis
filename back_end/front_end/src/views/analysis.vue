@@ -24,9 +24,9 @@
         <el-row v-for="(item) in commentList" :key="item.id">
           <div class="itemClass">
             <div class="title">
-              <el-col :span="16"><span>{{item.comment}}</span></el-col>
+              <el-col :span="12"><span>{{item.comment}}</span></el-col>
               <el-col :span="2">&nbsp;</el-col>
-              <el-col :span="4">
+              <el-col :span="6">
               <el-select v-model="change_mentality" multiple collapse-tags placeholder="心态" @change="change(item)" size="mini">
               <el-option-group
                 v-for="item in mentalityData"
