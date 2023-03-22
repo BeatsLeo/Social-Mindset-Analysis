@@ -30,6 +30,8 @@ urlpatterns = [
     path('index/attitude_pie/', index.attitude_pie),
     path('index/attitude_column/', index.attitude_column),
     path('index/event_cloud/', index.event_cloud),
+    path('index/data_statistics/', index.data_statistics),
+
 
     # 热点事件
     path('rdsj/event_list/', rdsj.event_list),
@@ -41,6 +43,7 @@ urlpatterns = [
     path('xtfx/comments_list/', xtfx.comments_list),
     path('xtfx/comments_detail/', xtfx.comments_detail),
     path('xtfx/comment_cloud/', xtfx.comment_cloud),
+    path('xtfx/data_statistics/', xtfx.data_statistics),
 
     # 心态调整建议库
     path('xttz/', xttz.xttz),

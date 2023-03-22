@@ -3,6 +3,7 @@ from app import models
 from django.db.models import Q, Sum
 from django.views.decorators.http import require_http_methods
 import pandas as pd
+import datetime
 
 # 评论词云
 def comment_cloud(request):
@@ -92,8 +93,9 @@ def comments_list(request):
     attitude = request.GET.get('attitudes')
     commentsId = request.GET.get('comments_id')
     if (commentsId and attitude):
-        models.train.objects.create(label=attitude, comments_id_id=commentsId,correct=0)
-        models.untrain.objects.filter(comments_id_id=commentsId).delete()
+        now_day = datetime.datetime.now()
+        models.train.objects.create(label=attitude, comments_id_id=commentsId,correct=0,time=now_day)
+        models.untrain.objects.filter(id=commentsId).delete()
 
         return JsonResponse({'respMsg':'success','respCode':'000000'})
 
@@ -102,10 +104,15 @@ def comments_list(request):
         # 根据搜索条件去数据库获取
         response['comments_list'] = []
         response['attitude_map'] = []
+        uncorrect_count = models.untrain.objects.count()
+        uncorrect_count += models.train.objects.filter(correct=0).count()
+        response['uncorrect_count'] = uncorrect_count
+        correct_count = models.train.objects.filter(correct=1).count()
+        response['correct_count'] = correct_count
         queryset = models.untrain.objects.all()[:5]
         for object in queryset:
             temp = {}
-            temp['id']=object.comments_id.comments_id
+            temp['id']=object.id
             temp['comment'] = object.comments_id.content
             response['comments_list'].append(temp)
         response['respMsg'] = 'success'
@@ -122,3 +129,14 @@ def comments_list(request):
 
     # print("comments_list:",response)
     return JsonResponse(response)
+
+#统计数据
+def data_statistics(request):
+    response = {}
+
+    now_day = datetime.date.today()
+    new_count = models.train.objects.filter(time__date=now_day).count()
+    response['new_count'] = new_count
+
+    # print("datastatistics:", response)
+    return JsonResponse(response, safe=False)

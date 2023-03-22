@@ -1,5 +1,4 @@
-import time
-
+import datetime
 from app import models
 from django.db.models import Q
 import numpy as np
@@ -91,6 +90,31 @@ def event_cloud(request):
 
     # print("worddata:",worddata)
     return JsonResponse(worddata, safe=False)
+
+#统计数据&折线图
+def data_statistics(request):
+    response = {}
+
+    count_all = models.event_statistics.objects.count()
+    count_all+= models.comments_statistics.objects.count()
+    response['count_all'] = count_all
+
+    now_day=datetime.date.today()
+    queryset=models.crawler_information.objects.filter(time__date=now_day).first()
+    new_all =queryset.add
+    response['new_all'] = new_all
+    new_positive=queryset.positive
+    response['new_positive'] = new_positive
+    new_neutral = queryset.neutral
+    response['new_neutral'] = new_neutral
+    new_negative = queryset.negative
+    response['new_negative'] = new_negative
+
+    queryset=models.crawler_information.objects.all().values_list('add','time')[:10]
+    response['curve_chart']=[{item[1].strftime('%Y-%m-%d'):item[0]} for item in queryset]
+
+    # print("datastatistics:",response)
+    return JsonResponse(response, safe=False)
 
 # 热点事件列表
 @require_http_methods(["GET"])

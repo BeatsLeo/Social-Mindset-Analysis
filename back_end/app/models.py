@@ -148,6 +148,7 @@ class train(models.Model):
     )
     label = models.SmallIntegerField(verbose_name='心态标签', choices=label_choices)
     correct=models.BooleanField(verbose_name='更正标签')
+    time = models.DateTimeField(verbose_name='手动更正时间')
 
 
 # 4.待校正表

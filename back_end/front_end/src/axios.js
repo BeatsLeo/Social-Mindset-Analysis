@@ -27,7 +27,8 @@ const instance = axios.create({
   withCredentials: true,
 });
 
-instance.defaults.baseURL = 'http://0.0.0.0:8000'
+instance.defaults.baseURL = 'http://127.0.0.1:8000'
+// instance.defaults.baseURL = 'http://0.0.0.0:8000'
 // 添加响应拦截器
 instance.interceptors.response.use(
   (response) => {
