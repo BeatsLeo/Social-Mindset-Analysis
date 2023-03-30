@@ -2,7 +2,11 @@
 **/.vscode
 **/.idea
 **/__pycache__
+<<<<<<< HEAD
 **/LCSTS
+=======
+**/*_study
+>>>>>>> main
 
 from_chatgpt.ipynb
 *.gz
