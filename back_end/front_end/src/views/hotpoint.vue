@@ -22,6 +22,7 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             size="mini"
+            style="width:95% ;"
             @blur="search()">
           </el-date-picker>
         </el-col>
@@ -64,9 +65,12 @@
       <el-row>
         <!--<el-button type="text" icon="el-icon-arrow-down" @click="nextPage()">展开列表</el-button>-->
         <div style="float:right;margin-right:50px;">
-        <span v-if="currpage>1" @click="changePage(currpage,page_flag=false)">上一页</span>
-        <span>{{currpage}}</span>/<span>{{pagesum}}</span>
-        <span v-if="currpage<pagesum" @click="changePage(currpage,page_flag=true)">下一页</span>
+          <el-button-group>
+            <el-button type="info" icon="el-icon-arrow-left" round><span v-if="currpage>1" @click="changePage(currpage,page_flag=false)">上一页</span></el-button>
+            <el-button type="info" icon="el-icon-share">{{currpage}}/{{pagesum}}</el-button>
+            <el-button type="info" round><span v-if="currpage<pagesum" @click="changePage(currpage,page_flag=true)">下一页</span><i class="el-icon-arrow-right el-icon--right"></i></el-button>
+          </el-button-group>
+        
         </div>
       </el-row>
     </el-col>
@@ -84,12 +88,13 @@
       <el-row>
         <h2><i class="el-icon-s-opportunity"></i>&nbsp;热点地区热力图</h2>
         <el-divider></el-divider>
-        <el-col :span="12">
+        <el-col :span="10">
           <div class="map">
             <china-map :attitude_color="mapData"></china-map>
           </div>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="1">&nbsp;</el-col>
+        <el-col :span="13">
           <div class="chartCategory">
             <chart-category :hot_count="chartCategoryData"></chart-category>
           </div>

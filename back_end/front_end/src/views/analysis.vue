@@ -27,7 +27,7 @@
               <el-col :span="12"><span>{{item.comment}}</span></el-col>
               <el-col :span="2">&nbsp;</el-col>
               <el-col :span="6">
-              <el-select v-model="change_mentality" multiple collapse-tags placeholder="心态" @change="change(item)" size="mini">
+              <el-select v-model="change_mentality" multiple collapse-tags placeholder="心态" @change="change(item)" size="mini" multiple-limit="1">.
               <el-option-group
                 v-for="item in mentalityData"
                 :key="item.group"

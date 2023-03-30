@@ -9,9 +9,37 @@
       <el-col :span="2">&nbsp;</el-col>
     </el-row>
     <el-row class="content">
-      <el-col :span="24">
-      <el-col :span="1">&nbsp;</el-col>
-      <el-col :span="8">
+      <el-col :span="2">&nbsp;</el-col>
+      <el-col :span="11">
+        <el-row>
+          <h2><i class="el-icon-loading"></i>&nbsp;数据新增折线图</h2>
+          <el-divider></el-divider>
+          <div>
+          <el-col :span="24">
+            <chart-line :data="chartData"></chart-line>
+          </el-col>
+          </div>
+          </el-row>
+          <el-row>
+          <h2><i class="el-icon-loading"></i>&nbsp;热点地区变化时间图</h2>
+          <el-divider></el-divider>
+          <el-col :span="24">
+          <div class="chartCategory" v-if="ShowPage_column">
+            <chart-category :hot_count="chartCategoryData"></chart-category>
+          </div>
+        </el-col>
+          </el-row>
+        <el-row>
+        <h2><i class="el-icon-s-opportunity"></i>&nbsp;心态分布图</h2>
+        <el-divider></el-divider>
+        <div class="map" v-if="ShowPage_map">
+          <china-map :attitude_color="mapData"></china-map>
+        </div>
+      </el-row>
+
+      </el-col>
+      <el-col :span="2">&nbsp;</el-col>
+      <el-col :span="9">
         <h2><i class="el-icon-s-opportunity"></i>&nbsp;部分热点事件展示</h2>
         <el-divider></el-divider>
         <el-row v-for="(item) in hotList" :key="item.id">
@@ -26,38 +54,6 @@
             </div>
           </div>
         </el-row>
-      </el-col>
-      <el-col :span="2">&nbsp;</el-col>
-      <el-col :span="10">
-        <el-row>
-        <h2><i class="el-icon-s-opportunity"></i>&nbsp;心态分布图</h2>
-        <el-divider></el-divider>
-        <div class="map" v-if="ShowPage_map">
-          <china-map :attitude_color="mapData"></china-map>
-        </div>
-      </el-row>
-      </el-col>
-      </el-col>
-      <el-col :span="24">
-      <p>&nbsp;</p>
-      <p>&nbsp;</p>
-      <p>&nbsp;</p>
-      <p>&nbsp;</p>
-      </el-col>
-      <el-col :span="24">
-        <el-col :span="1">&nbsp;</el-col>
-        <el-col :span="8">
-        <el-row>
-        <h2><i class="el-icon-cloudy"></i>&nbsp;词云</h2>
-        <el-divider></el-divider>
-        <div class="wordcloud" v-if="ShowPage_word">
-        <word-cloud :worddata="wordData"></word-cloud>
-        </div>
-        </el-row>
-        </el-col>
-        <el-col :span="2">&nbsp;</el-col>
-        <el-col :span="10">
-        <el-row>
           <el-row>
           <h2><i class="el-icon-sort"></i>&nbsp;心态变化时间图</h2>
           <el-divider></el-divider>
@@ -68,18 +64,13 @@
           </el-col>
           </el-row>
           <el-row>
-          <h2><i class="el-icon-loading"></i>&nbsp;热点地区变化时间图</h2>
+          <h2><i class="el-icon-cloudy"></i>&nbsp;词云</h2>
           <el-divider></el-divider>
-          <el-col :span="24">
-          <div class="chartCategory" v-if="ShowPage_column">
-            <chart-category :hot_count="chartCategoryData"></chart-category>
+          <div class="wordcloud" v-if="ShowPage_word">
+          <word-cloud :worddata="wordData"></word-cloud>
           </div>
-        </el-col>
           </el-row>
-        </el-row>
-        </el-col>
       </el-col>
-
     </el-row>
   </div>
 </template>
@@ -91,6 +82,8 @@ import "../assets/icon/font/iconfont.css"
 import wordCloud from '@/components/wordCloud.vue';
 import ChartCategory from '@/components/chartCategory_hot.vue';
 import ChartPie from '@/components/chartPie.vue';
+import ChartLine from '@/components/chartLine.vue';
+
 
 export default {
   data () {
@@ -108,13 +101,21 @@ export default {
       ShowPage_map:false,
       ShowPage_pie:false,
       ShowPage_column:false,
+      chartData: [
+        { time: '2021-01-01', value: 10 },
+        { time: '2021-01-02', value: 20 },
+        { time: '2021-01-03', value: 30 },
+        { time: '2021-01-04', value: 40 },
+        { time: '2021-01-05', value: 50 }
+      ]
     }
   },
   components: {
     ChinaMap,
     wordCloud,
     ChartCategory,
-    ChartPie
+    ChartPie,
+    ChartLine,
   },
   mounted() {
     this.init()
@@ -350,6 +351,10 @@ export default {
     }
   }
   .chartCategory{
+    width: 100%;
+    height: 260px;
+  }
+  .chartLine{
     width: 100%;
     height: 260px;
   }
