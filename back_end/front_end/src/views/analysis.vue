@@ -2,6 +2,7 @@
   <div class="analysisView">
     <el-col :span="12">
       <h2><i class="el-icon-s-opportunity"></i>&nbsp;心态列表</h2>
+      <BubbleChart></BubbleChart>
       <el-divider></el-divider>
       <el-row class="mentality">
         <el-radio-group v-model="mentality" size="small">
@@ -79,7 +80,7 @@ import dqData from "../testdata/dqData";
 import mentalityData from "../testdata/mentalityData";
 import ChartPie from '@/components/chartPie.vue';
 import qs from "qs";
-
+import BubbleChart from '@/components/bubbleChart.vue'; 
 export default {
   data () {
     return {
@@ -104,6 +105,7 @@ export default {
     wordCloud,
     ChinaMap,
     ChartPie,
+    BubbleChart,
   },
   mounted() {
     this.init()
