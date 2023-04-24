@@ -1,11 +1,28 @@
 from django.http import JsonResponse
 from app import models
 from django.db.models import Q, Sum
-from django.views.decorators.http import require_http_methods
 import pandas as pd
 import datetime
+from django.db.models.functions import Coalesce
 
-# 评论词云
+#心态分析首页中国心态热力分布图（折线图）-分积极，消极，中性三条心态折线
+def attitude_curve(request):
+    now = datetime.date.today()
+    # now = datetime.date(year=2023, month=2, day=7)
+    attitude_counts = models.comments_statistics.objects.filter(comment_time__range=((now- datetime.timedelta(6)),now)).values('attitude','comment_time').annotate(nums=Coalesce(Sum('thumbs'), 0)).order_by('comment_time')
+    attitude_count={(now-datetime.timedelta(i)).strftime('%Y-%m-%d'):[0,0,0] for i in range(7)}
+    for attitude in attitude_counts:
+        time = attitude['comment_time'].strftime('%Y-%m-%d')
+        if attitude['attitude'] in range(0,5):
+            attitude_count[time][0]+=attitude['nums']
+        if attitude['attitude'] in range(5,10):
+            attitude_count[time][1]+=attitude['nums']
+        if attitude['attitude'] in range(10, 13):
+            attitude_count[time][2]+=attitude['nums']
+    # print("attitude_curve:",attitude_count)
+    return JsonResponse(attitude_count, safe=False)
+
+#心态分析详情页评论词云
 def comment_cloud(request):
     worddata= []
 
@@ -17,8 +34,7 @@ def comment_cloud(request):
     # print("worddata:",worddata)
     return JsonResponse(worddata, safe=False)
 
-#心态详情
-@require_http_methods(["GET"])
+#心态分析详情页心态背后事件导向及其筛选&心态分析首页气泡（气泡点击后应跳转至相应心态背后事件导向及其筛选）
 def comments_detail(request):
     response = {}
 
@@ -82,14 +98,13 @@ def comments_detail(request):
     # print("comments_details_list:",response)
     return JsonResponse(response)
 
-#评论列表
+#模型接口需要人工校正的列表（更正心态后需更新需要人工校正的列表初今日新增以外所有内容）
 def comments_list(request):
     response={}
 
     attitude_map = {v: k for k, v in models.comments_statistics.attitude_choices}
 
     # 校正心态
-    # print(request.POST.getlist())
     attitude = request.GET.get('attitudes')
     commentsId = request.GET.get('comments_id')
     if (commentsId and attitude):
@@ -130,7 +145,7 @@ def comments_list(request):
     # print("comments_list:",response)
     return JsonResponse(response)
 
-#统计数据
+#模型接口需要人工校正的列表今日新增
 def data_statistics(request):
     response = {}
 

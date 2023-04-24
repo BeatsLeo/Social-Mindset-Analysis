@@ -1,10 +1,10 @@
 from django import forms
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 from app import models
 from app.utils.encrypt import md5
 from app.utils.bootstrap import BootStrapForm, BootStrapModelForm
+from django.views.decorators.csrf import csrf_exempt
 
 class RegistModelForm(BootStrapModelForm):
     password = forms.CharField(label="密码", widget=forms.PasswordInput(render_value=True), required=True)
@@ -26,23 +26,27 @@ class LoginForm(BootStrapForm):
         pwd = self.cleaned_data.get('l_password', '')
         return md5(pwd)
 
+@csrf_exempt
 def login(request):
     """登录"""
     loginform = LoginForm(data=request.POST)
     if(loginform.is_valid()):
         # 去数据库校验用户名和密码是否正确
         logininfo = {'username': loginform.cleaned_data['l_username'], 'password': loginform.cleaned_data['l_password']}
+        # print(logininfo)
         admin_object = models.Admin.objects.filter(**logininfo).first()
         if(not admin_object):
             return JsonResponse({'flag': False})
-        
         # 用户名和密码正确
         # 网站生成随机字符串, 写到用户浏览器的cookie中, 再写入到session中
         request.session['info'] = {'id': admin_object.id, 'username': admin_object.username, 'password': admin_object.password} # django框架帮助一行实现上述三个步骤, 实质上再执行此行代码时会生成随机cookie(session id), 并保存, 同时返回给浏览器, 浏览器带着cookie再访问一次
         # 设置session可以保存7天, 在获取验证码时设置为了60s, 因此需要设置回来
         request.session.set_expiry(60 * 60 * 24 * 7)
+        request.session.modified = True
 
         return JsonResponse({'flag': True})
+
+    return JsonResponse({'flag': False})
 
 @csrf_exempt
 def regist(request):
@@ -53,6 +57,7 @@ def regist(request):
         return JsonResponse({'flag': True})
 
     return JsonResponse({'flag': False, 'error': registform.errors})
+
 
 @csrf_exempt
 def editpsw(request):
@@ -95,4 +100,4 @@ def logout(request):
     """注销"""
     request.session.clear()
 
-    return redirect('/login/')
+    return redirect('/api/login/')

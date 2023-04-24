@@ -366,3 +366,41 @@ class crawler_information(models.Model):
     positive=models.IntegerField(verbose_name="积极")
     neutral=models.IntegerField(verbose_name="中性")
     negative=models.IntegerField(verbose_name="消极")
+
+# 11.用户反馈表
+class feedback(models.Model):
+    id = models.AutoField(verbose_name='用户反馈id', primary_key=True)
+    score = models.FloatField(verbose_name='评分')
+    feedback_choices = (
+        (0, '命名体识别'),
+        (1, '情感分类'),
+        (2, '文本摘要'),
+        (3, '引导建议生成'),
+    )
+    type = models.SmallIntegerField(verbose_name='评价模型', choices=feedback_choices)
+    input=models.CharField( max_length=512,verbose_name="输入")
+    output = models.CharField(max_length=512, verbose_name="输出")
+
+# 12.心态建议表
+class attitude_recommend(models.Model):
+    id = models.AutoField(verbose_name='心态建议id', primary_key=True)
+    attitude_choices = (
+        # 0-4: 积极
+        (0, '高兴'),
+        (1, '搞笑'),
+        (2, '期待'),
+        (3, '肯定'),
+        (4, '感动'),
+        # 5-9: 消极
+        (5, '悲伤'),
+        (6, '愤怒'),
+        (7, '厌恶'),
+        (8, '担心'),
+        (9, '无聊'),
+        # 10-12: 中性
+        (10, '警惕'),
+        (11, '惊讶'),
+        (12, '无所谓'),
+    )
+    attitude = models.SmallIntegerField(verbose_name='心态', choices=attitude_choices)
+    suggestion=models.CharField( max_length=1024,verbose_name="建议")
