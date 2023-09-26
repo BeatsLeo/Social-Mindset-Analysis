@@ -20,7 +20,7 @@
 
 ![项目网站使用简介](./images/项目网站使用简介.png)
 
-​		项目网址为：http://www.beatsleo.com
+​		项目网址为：http://www.beatsleo.com:8080
 
 ![image-20230417201907357](./images/网站一览.png)
 
